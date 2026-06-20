@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: lottery-system
+  profiles:
+    active: dev
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+logging:
+  config: classpath:logback-spring.xml
