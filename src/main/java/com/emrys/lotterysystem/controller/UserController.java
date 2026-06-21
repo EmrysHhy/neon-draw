@@ -35,6 +35,11 @@ public class UserController {
         return CommonResult.success(convertToUserRegisterResult(dto));
     }
 
+    /**
+     * 类型转换
+     * @param userRegisterDTO
+     * @return
+     */
     private UserRegisterResult convertToUserRegisterResult(UserRegisterDTO userRegisterDTO) {
         UserRegisterResult result = new UserRegisterResult();
         if(userRegisterDTO == null){

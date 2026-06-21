@@ -4,6 +4,10 @@ spring:
     username: root
     password: 247711
 
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # 开启 MyBatis 的 SQL 日志打印，将执行的 SQL 语句和参数输出到控制台
+
 logging:
   level:
     com.emrys: debug
