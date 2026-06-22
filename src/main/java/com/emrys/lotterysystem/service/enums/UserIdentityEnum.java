@@ -19,7 +19,7 @@ public enum UserIdentityEnum {
      */
     public static UserIdentityEnum forName(String name ){
         for (UserIdentityEnum userIdentityEnum : UserIdentityEnum.values()) {
-            if (userIdentityEnum.getMessage().equals(name)) {
+            if (userIdentityEnum.name().equals(name)) {
                 return userIdentityEnum;
             }
         }
