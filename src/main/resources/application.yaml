@@ -5,10 +5,49 @@ spring:
     active: dev
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
+  ## 邮件配置 ##
+  mail:
+    host: smtp.163.com                                              # SMTP服务器地址
+    port: 465                                                       # SMTP端口，465为SSL加密端口
+    username: m15360167286@163.com                                  # 发件人邮箱
+    password: CDSgJKfssQxwb7bJ                                      # SMTP授权码（非邮箱登录密码）
+    default-encoding: UTF-8                                         # 邮件默认编码
+    properties:                                                     # 额外属性配置
+      mail:
+        smtp:
+          ssl:
+            enable: true                                            # 启用SSL加密传输
+          auth: true                                                # 启用SMTP认证
+          connectiontimeout: 5000                                   # 连接超时时间（毫秒）
+          timeout: 5000                                             # 读取超时时间（毫秒）
+          writetimeout: 5000                                        # 写入超时时间（毫秒）
+
+
+  ## redis ##
+  data:
+    redis:
+      host: localhost
+      port: 8888
+      # 连接空闲超过 N 秒后关闭，0 为禁用，这里配置值和 tcp-keepalive 值一致
+      timeout: 300s
+      # 默认使用 lettuce 连接池
+      lettuce:
+        pool:
+          # 允许最大连接数，默认 8（负值表示没有限制）
+          max-active: 8
+          # 最大空闲连接数，默认 8
+          max-idle: 8
+          # 最小空闲连接数，默认 0
+          min-idle: 0
+          # 连接用完时，新的请求等待时间，超过该时间抛出异常 JedisConnectionException（默认-1，负值表示没有限制）
+          max-wait: 5s
+
 mybatis:
   mapper-locations: classpath:mapper/*.xml
   configuration:
     map-underscore-to-camel-case: true  # 将数据库中的下划线命名转换为驼峰命名
   type-handlers-package: com.emrys.lotterysystem.dao.handle  # 指定自定义类型处理器的包路径
+
 logging:
   config: classpath:logback-spring.xml
+

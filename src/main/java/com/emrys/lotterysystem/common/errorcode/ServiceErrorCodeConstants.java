@@ -16,4 +16,6 @@ public interface ServiceErrorCodeConstants {
     ErrorCode MAIL_HAS_BEEN_USED = new ErrorCode(106,"邮箱已经被使用");
     ErrorCode PHONE_NUMBER_HAS_BEEN_USED = new ErrorCode(107,"手机号已经被使用");
     ErrorCode NAME_HAS_BEEN_USED = new ErrorCode(108,"用户名已经被使用了");
+    ErrorCode MAIL_SEND_ERROR = new ErrorCode(109,"邮箱发送失败");
+
 }
