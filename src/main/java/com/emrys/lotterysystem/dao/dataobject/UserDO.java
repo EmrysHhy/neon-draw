@@ -11,7 +11,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class UserDO extends BaseDO {
-    private String username;
+    private String userName;
     private String email;
     private String identity;
     private Encrypt phoneNumber;

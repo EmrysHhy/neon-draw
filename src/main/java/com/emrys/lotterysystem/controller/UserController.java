@@ -3,12 +3,17 @@ package com.emrys.lotterysystem.controller;
 import com.emrys.lotterysystem.common.errorcode.ControllerErrorCodeConstants;
 import com.emrys.lotterysystem.common.exception.ControllerException;
 import com.emrys.lotterysystem.common.pojo.CommonResult;
+import com.emrys.lotterysystem.controller.param.UserPasswordLoginParam;
 import com.emrys.lotterysystem.controller.param.UserRegisterParam;
+import com.emrys.lotterysystem.controller.param.UserVarificationLoginParam;
+import com.emrys.lotterysystem.controller.result.UserLoginResult;
 import com.emrys.lotterysystem.controller.result.UserRegisterResult;
 import com.emrys.lotterysystem.service.UserService;
 import com.emrys.lotterysystem.service.VarificationCodeService;
+import com.emrys.lotterysystem.service.dto.UserLoginDTO;
 import com.emrys.lotterysystem.service.dto.UserRegisterDTO;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,7 +40,7 @@ public class UserController {
     public CommonResult<UserRegisterResult> userRegister(@Validated @RequestBody UserRegisterParam param) { //json转换成java对象
         log.info("user register, param: {}", param);
         UserRegisterDTO dto = userService.register(param);
-        return CommonResult.success(convertToUserRegisterResult(dto));
+        return CommonResult.success(UserRegisterResult.convertToUserRegisterResult(dto));
     }
 
     /**
@@ -44,24 +49,34 @@ public class UserController {
      * @return
      */
     @RequestMapping("/varification/send")
-    public CommonResult<?> sendVarificationCode(String email) {
+    public CommonResult<?> sendVarificationCode(@Param("email") String email) {
         log.info("send varification code, email: {}", email);
         //调用service层发送验证码
         varificationCodeService.sendVarificationCode(email);
         return CommonResult.success(200);
     }
+
+
+
     /**
-     * 类型转换
-     * @param userRegisterDTO
+     * 密码登录接口
+     */
+    @RequestMapping("/password/login")
+    public CommonResult<?> userLoginByPassword(@Validated @RequestBody UserPasswordLoginParam userPasswordLoginParam) {
+        log.info("userLoginByPassword,{}", userPasswordLoginParam);
+        UserLoginDTO userLoginDTO = userService.login(userPasswordLoginParam);
+        return CommonResult.success(UserLoginResult.convertToUserLoginResult(userLoginDTO));
+    }
+
+    /**
+     * 验证码登录接口(当前不支持手机验证码登录)
+     * @param userVarificationLoginParam
      * @return
      */
-    private UserRegisterResult convertToUserRegisterResult(UserRegisterDTO userRegisterDTO) {
-        UserRegisterResult result = new UserRegisterResult();
-        if(userRegisterDTO == null){
-            log.info("user register failed, userRegisterDTO is null");
-            throw new ControllerException(ControllerErrorCodeConstants.REGISTER_ERROR);
-        }
-        result.setUserId(userRegisterDTO.getUserId());
-        return result;
+    @RequestMapping("/varification/login")
+    public CommonResult<?> userLoginByVarification(@Validated @RequestBody UserVarificationLoginParam userVarificationLoginParam) {
+        log.info("userLoginByVarification,{}", userVarificationLoginParam);
+        UserLoginDTO userLoginDTO = userService.login(userVarificationLoginParam);
+        return CommonResult.success(UserLoginResult.convertToUserLoginResult(userLoginDTO));
     }
 }

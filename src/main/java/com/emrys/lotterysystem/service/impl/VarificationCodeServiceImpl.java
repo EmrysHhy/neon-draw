@@ -1,7 +1,6 @@
 package com.emrys.lotterysystem.service.impl;
 
 import com.emrys.lotterysystem.common.errorcode.ServiceErrorCodeConstants;
-import com.emrys.lotterysystem.common.exception.ControllerException;
 import com.emrys.lotterysystem.common.exception.ServiceException;
 import com.emrys.lotterysystem.common.utils.CaptchaUtil;
 import com.emrys.lotterysystem.common.utils.EmailUtil;
@@ -28,8 +27,10 @@ public class VarificationCodeServiceImpl implements VarificationCodeService {
     private RedisUtil redisUtil;
     @Autowired
     private EmailUtil emailUtil;
+
     /**
      * 生成验证码,并且发送至邮箱,并且缓存验证码
+     *
      * @param email
      */
     @Override
@@ -52,6 +53,7 @@ public class VarificationCodeServiceImpl implements VarificationCodeService {
 
     /**
      * 获取验证码
+     *
      * @param email
      * @return
      */

@@ -23,6 +23,9 @@ public class AESUtil {
     /** 预设密钥（16 字节） */
     private static final String DEFAULT_KEY = "lottery2026!@#$%";
 
+    /** 固定 IV（16 字节），确保相同明文产生相同密文 */
+    private static final byte[] FIXED_IV = "emrys_iv_16bytes".getBytes(StandardCharsets.UTF_8);
+
     // ==================== 公开方法 ====================
 
     /**
@@ -60,18 +63,10 @@ public class AESUtil {
             Cipher cipher = Cipher.getInstance(AES_CBC);
             SecretKeySpec keySpec = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "AES");
 
-            // 生成随机 IV
-            byte[] iv = generateIv();
-            cipher.init(Cipher.ENCRYPT_MODE, keySpec, new IvParameterSpec(iv));
+            cipher.init(Cipher.ENCRYPT_MODE, keySpec, new IvParameterSpec(FIXED_IV));
 
             byte[] encrypted = cipher.doFinal(plainText.getBytes(StandardCharsets.UTF_8));
-
-            // IV + 密文 拼在一起后 Base64 编码
-            byte[] combined = new byte[IV_LENGTH + encrypted.length];
-            System.arraycopy(iv, 0, combined, 0, IV_LENGTH);
-            System.arraycopy(encrypted, 0, combined, IV_LENGTH, encrypted.length);
-
-            return Base64.getEncoder().encodeToString(combined);
+            return Base64.getEncoder().encodeToString(encrypted);
         } catch (Exception e) {
             throw new RuntimeException("AES 加密失败", e);
         }
@@ -92,15 +87,9 @@ public class AESUtil {
             Cipher cipher = Cipher.getInstance(AES_CBC);
             SecretKeySpec keySpec = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "AES");
 
-            byte[] combined = Base64.getDecoder().decode(cipherText);
+            cipher.init(Cipher.DECRYPT_MODE, keySpec, new IvParameterSpec(FIXED_IV));
 
-            // 前 16 字节是 IV，后面是密文
-            byte[] iv = new byte[IV_LENGTH];
-            byte[] encrypted = new byte[combined.length - IV_LENGTH];
-            System.arraycopy(combined, 0, iv, 0, IV_LENGTH);
-            System.arraycopy(combined, IV_LENGTH, encrypted, 0, encrypted.length);
-
-            cipher.init(Cipher.DECRYPT_MODE, keySpec, new IvParameterSpec(iv));
+            byte[] encrypted = Base64.getDecoder().decode(cipherText);
             byte[] decrypted = cipher.doFinal(encrypted);
 
             return new String(decrypted, StandardCharsets.UTF_8);
@@ -110,12 +99,6 @@ public class AESUtil {
     }
 
     // ==================== 内部方法 ====================
-
-    private static byte[] generateIv() {
-        byte[] iv = new byte[IV_LENGTH];
-        new SecureRandom().nextBytes(iv);
-        return iv;
-    }
 
     private static boolean isEmpty(String str) {
         return str == null || str.isEmpty();

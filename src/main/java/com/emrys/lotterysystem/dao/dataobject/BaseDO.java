@@ -3,6 +3,7 @@ package com.emrys.lotterysystem.dao.dataobject;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  *
@@ -12,6 +13,6 @@ import java.io.Serializable;
 @Data
 public class BaseDO implements Serializable {
         private Long id;
-        private Long gmtCreate;
-        private Long gmtModified;
+        private LocalDateTime gmtCreate;
+        private LocalDateTime gmtModified;
 }
