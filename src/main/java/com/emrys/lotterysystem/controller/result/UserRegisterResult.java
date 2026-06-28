@@ -22,13 +22,5 @@ public class UserRegisterResult implements Serializable {
      * @param userRegisterDTO ->
      * @return
      */
-    public static UserRegisterResult convertToUserRegisterResult(UserRegisterDTO userRegisterDTO) {
-        UserRegisterResult userRegisterResult = new UserRegisterResult();
-        if(userRegisterDTO == null){
-            log.error("user register failed, userRegisterDTO is null");
-            throw new ControllerException(ControllerErrorCodeConstants.REGISTER_ERROR);
-        }
-        userRegisterResult.setUserId(userRegisterDTO.getUserId());
-        return userRegisterResult;
-    }
+
 }

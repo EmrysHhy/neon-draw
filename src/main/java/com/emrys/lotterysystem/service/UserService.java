@@ -3,9 +3,13 @@ package com.emrys.lotterysystem.service;
 import com.emrys.lotterysystem.controller.param.UserPasswordLoginParam;
 import com.emrys.lotterysystem.controller.param.UserRegisterParam;
 import com.emrys.lotterysystem.controller.param.UserVarificationLoginParam;
+import com.emrys.lotterysystem.service.dto.UserDTO;
 import com.emrys.lotterysystem.service.dto.UserLoginDTO;
 import com.emrys.lotterysystem.service.dto.UserRegisterDTO;
+import com.emrys.lotterysystem.service.enums.UserIdentityEnum;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  *
@@ -24,4 +28,6 @@ public interface UserService {
      */
     UserLoginDTO login(UserPasswordLoginParam userPasswordLoginParam);
     UserLoginDTO login(UserVarificationLoginParam userVarificationLoginParam);
+
+    List<UserDTO> findUserInfo(UserIdentityEnum userIdentityEnum);
 }

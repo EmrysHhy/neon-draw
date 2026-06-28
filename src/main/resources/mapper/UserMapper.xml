@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.emrys.lotterysystem.dao.mapper.UserMapper">
+
+    <select id="selectUserListByIdentity" resultType="com.emrys.lotterysystem.dao.dataobject.UserDO">
+        select * from user
+        <where>
+            <if test="identity != null">
+                identity = #{identity}
+            </if>
+        </where>
+        order by id desc
+    </select>
+</mapper>

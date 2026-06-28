@@ -1,5 +1,6 @@
 package com.emrys.lotterysystem.service.impl;
 
+import com.emrys.lotterysystem.common.convert.ServiceConverter;
 import com.emrys.lotterysystem.common.errorcode.ServiceErrorCodeConstants;
 import com.emrys.lotterysystem.common.exception.ServiceException;
 import com.emrys.lotterysystem.common.utils.JWTUtil;
@@ -13,16 +14,17 @@ import com.emrys.lotterysystem.dao.dataobject.UserDO;
 import com.emrys.lotterysystem.dao.mapper.UserMapper;
 import com.emrys.lotterysystem.service.UserService;
 import com.emrys.lotterysystem.service.VarificationCodeService;
+import com.emrys.lotterysystem.service.dto.UserDTO;
 import com.emrys.lotterysystem.service.dto.UserLoginDTO;
 import com.emrys.lotterysystem.service.dto.UserRegisterDTO;
 import com.emrys.lotterysystem.service.enums.UserIdentityEnum;
-import io.jsonwebtoken.security.Password;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -158,6 +160,21 @@ public class UserServiceImpl implements UserService {
         userLoginDTO.setToken(token);
         userLoginDTO.setMandatoryIdentity(UserIdentityEnum.forName(userDO.getIdentity()));
         return userLoginDTO;
+    }
+
+    /**
+     * 根据人员身份查询人员列表
+     * @param userIdentityEnum
+     * @return
+     */
+    @Override
+    public List<UserDTO> findUserInfo(UserIdentityEnum userIdentityEnum) {
+        //先转换成String类型的身份,然后查询数据库
+        String identity = userIdentityEnum == null ? null : userIdentityEnum.name();
+        List<UserDO> userDOList = userMapper.selectUserListByIdentity(identity);
+        //转换成DTO对象
+        List<UserDTO> userDTOList = ServiceConverter.convertToUserDTOList(userDOList);
+        return userDTOList;
     }
 
     /**

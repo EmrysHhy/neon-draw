@@ -2,8 +2,9 @@ package com.emrys.lotterysystem.dao.mapper;
 
 import com.emrys.lotterysystem.dao.dataobject.Encrypt;
 import com.emrys.lotterysystem.dao.dataobject.UserDO;
-import jakarta.validation.constraints.NotBlank;
 import org.apache.ibatis.annotations.*;
+
+import java.util.List;
 
 /**
  *
@@ -26,4 +27,5 @@ public interface UserMapper {
     UserDO selectByPhoneNumber(@Param("phoneNumber") Encrypt phoneNumber);
     @Select("select * from user where email = #{email}")
     UserDO selectByMail(String email);
+    List<UserDO> selectUserListByIdentity(String identity);
 }

@@ -20,14 +20,4 @@ public class UserLoginResult implements Serializable {
     private String token;
     private String identity;
 
-    public static UserLoginResult convertToUserLoginResult(UserLoginDTO userLoginDTO) {
-        UserLoginResult userLoginResult = new UserLoginResult();
-        if(userLoginDTO == null){
-            log.error("user login failed, userLoginDTO is null");
-            throw new ControllerException(ControllerErrorCodeConstants.LOGIN_ERROR);
-        }
-        userLoginResult.setToken(userLoginDTO.getToken());
-        userLoginResult.setIdentity(userLoginDTO.getMandatoryIdentity().name());//得到的是一个枚举对象,然后取出name
-        return userLoginResult;
-    }
 }
