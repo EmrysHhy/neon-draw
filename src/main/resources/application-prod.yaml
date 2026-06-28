@@ -7,3 +7,7 @@ spring:
 logging:
   level:
     com.emrys: info
+
+# 生产环境上传路径
+pic:
+  local-path: /data/upload/lottery/

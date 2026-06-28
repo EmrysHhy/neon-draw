@@ -21,6 +21,9 @@ spring:
           connectiontimeout: 5000                                   # 连接超时时间（毫秒）
           timeout: 5000                                             # 读取超时时间（毫秒）
           writetimeout: 5000                                        # 写入超时时间（毫秒）
+  web:
+    resources:
+      static-locations: classpath:/static/,file:${pic.local-path}
 
 
   ## redis ##
@@ -50,4 +53,8 @@ mybatis:
 
 logging:
   config: classpath:logback-spring.xml
+
+# 自定义上传路径（末尾 / 不可省略）
+pic:
+  local-path: D:/code/JAVA/project/lottery-system/upload/
 

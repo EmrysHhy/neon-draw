@@ -22,4 +22,9 @@ public interface ServiceErrorCodeConstants {
     ErrorCode USER_NOT_FOUND = new ErrorCode(112, "用户不存在");
 
     ErrorCode VARIFICATION_CODE_ERROR = new ErrorCode(113, "验证码错误");
+    //
+     //
+     //
+    //图片错误码
+    ErrorCode PICTURE_UPLOAD_FAILED = new ErrorCode(500, "图片上传失败");
 }
