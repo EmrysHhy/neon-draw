@@ -11,3 +11,6 @@ mybatis:
 logging:
   level:
     com.emrys: debug
+# 自定义上传路径（末尾 / 不可省略）
+pic:
+  local-path: D:/code/JAVA/project/lottery-system/upload/

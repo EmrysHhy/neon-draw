@@ -25,6 +25,11 @@ spring:
     resources:
       static-locations: classpath:/static/,file:${pic.local-path}
 
+  ## 文件上传 ##
+  servlet:
+    multipart:
+      max-file-size: 10MB       # 单个文件最大大小，超过则抛出 MaxUploadSizeExceededException
+      max-request-size: 20MB    # 整个 multipart 请求的总大小上限（含所有文件+表单字段）
 
   ## redis ##
   data:
@@ -54,7 +59,5 @@ mybatis:
 logging:
   config: classpath:logback-spring.xml
 
-# 自定义上传路径（末尾 / 不可省略）
-pic:
-  local-path: D:/code/JAVA/project/lottery-system/upload/
+
 

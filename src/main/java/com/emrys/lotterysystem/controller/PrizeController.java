@@ -32,9 +32,9 @@ public class PrizeController {
     }
 
     @RequestMapping("/prize/create")
-    public CommonResult<Long> createPrize(@Validated @RequestPart CreatePrizeParam param, @RequestPart MultipartFile multipartFile) {
-        log.info("create prize, param: {}, file: {}", param, multipartFile.getOriginalFilename());
-        long id = prizeService.createPrize(param, multipartFile);
+    public CommonResult<Long> createPrize(@Validated @RequestPart CreatePrizeParam param, @RequestPart MultipartFile prizePic) {
+        log.info("create prize, param: {}, file: {}", param, prizePic.getOriginalFilename());
+        long id = prizeService.createPrize(param, prizePic);
         return CommonResult.success(id);
     }
 }
