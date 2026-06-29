@@ -1,6 +1,6 @@
 package com.emrys.lotterysystem.controller;
 
-import com.emrys.lotterysystem.common.convert.ControllerConverter;
+import com.emrys.lotterysystem.controller.convert.ControllerConverter;
 import com.emrys.lotterysystem.common.errorcode.ControllerErrorCodeConstants;
 import com.emrys.lotterysystem.common.exception.ControllerException;
 import com.emrys.lotterysystem.common.pojo.CommonResult;

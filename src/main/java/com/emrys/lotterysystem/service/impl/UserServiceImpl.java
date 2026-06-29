@@ -1,6 +1,6 @@
 package com.emrys.lotterysystem.service.impl;
 
-import com.emrys.lotterysystem.common.convert.ServiceConverter;
+import com.emrys.lotterysystem.service.convert.ServiceConverter;
 import com.emrys.lotterysystem.common.errorcode.ServiceErrorCodeConstants;
 import com.emrys.lotterysystem.common.exception.ServiceException;
 import com.emrys.lotterysystem.common.utils.JWTUtil;
