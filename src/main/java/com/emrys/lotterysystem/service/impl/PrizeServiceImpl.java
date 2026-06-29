@@ -6,6 +6,7 @@ import com.emrys.lotterysystem.dao.mapper.PrizeMapper;
 import com.emrys.lotterysystem.service.PictureService;
 import com.emrys.lotterysystem.service.PrizeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -13,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @author Emrys
  * content:
  */
+@Service
 public class PrizeServiceImpl implements PrizeService {
     @Autowired
     PictureService pictureService;

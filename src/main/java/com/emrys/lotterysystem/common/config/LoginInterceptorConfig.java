@@ -27,7 +27,7 @@ public class LoginInterceptorConfig implements WebMvcConfigurer {
             "/favicon.ico",
             "/user/**",
             "/**/login",
-            "/user/register",
+            "/prize/create",  //
             "/verification-code/send",
             "/winning-records/show"); // 排除登录和注册请求
     @Override

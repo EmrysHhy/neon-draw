@@ -11,6 +11,5 @@ import org.apache.ibatis.annotations.Options;
  */
 @Mapper
 public interface PrizeMapper {
-    @Options(useGeneratedKeys=true,keyProperty="id",keyColumn="id")  //可以将自增id加入到prizeDO中
     int insert(PrizeDO prizeDO);
 }

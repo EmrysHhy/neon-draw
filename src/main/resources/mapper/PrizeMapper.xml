@@ -5,10 +5,10 @@
 <mapper namespace="com.emrys.lotterysystem.dao.mapper.PrizeMapper">
 
 
-    <insert id="insert">
-        insert into prize (name,image_url,price,
-        <if test="description != null">description,</if> )
-        values (#{name},#{imageUrl},#{price},
-        <if test="description != null">#{description},</if> )
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into prize (name,image_url,price
+        <if test="description != null">,description</if> )
+        values (#{name},#{imageUrl},#{price}
+        <if test="description != null">,#{description}</if> )
     </insert>
 </mapper>
