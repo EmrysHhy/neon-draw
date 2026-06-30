@@ -5,10 +5,10 @@
 <mapper namespace="com.emrys.lotterysystem.dao.mapper.ActivityPrizeMapper">
 
     <insert id="batchInsert" useGeneratedKeys="true" keyProperty="id">
-        insert into activity_prize (activity_id, prize_id, prize_amount)
+        insert into activity_prize (activity_id, prize_id, prize_amount,prize_tiers,status)
         values
         <foreach collection="list" item="item" separator=",">
-            (#{item.activityId}, #{item.prizeId}, #{item.prizeAmount})
+            (#{item.activityId}, #{item.prizeId}, #{item.prizeAmount},#{item.prizeTiers},#{item.status})
         </foreach>
     </insert>
 </mapper>

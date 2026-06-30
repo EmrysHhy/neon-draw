@@ -25,6 +25,8 @@ public interface ServiceErrorCodeConstants {
 
      //活动错误码
     ErrorCode ACTIVITY_PARAM_EMPTY= new ErrorCode(301, "创建活动参数param为空");
+    ErrorCode ACTIVITY_DETAIL_CACHE_ERROR= new ErrorCode(302, "添加缓存失败");
+    ErrorCode ACTIVITY_DETAIL_CACHE_ERROR2= new ErrorCode(303, "获取缓存失败");
      //活动与人员错误码
     ErrorCode ACTIVITY_USER_NOT_EXIST= new ErrorCode(401, "创建人员信息不存在");
      //活动与奖品错误码

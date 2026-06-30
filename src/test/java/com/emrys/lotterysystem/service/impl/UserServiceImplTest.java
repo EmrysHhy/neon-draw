@@ -33,4 +33,14 @@ class UserServiceImplTest {
         List<UserDTO> userDTOS = userService.findUserInfo(UserIdentityEnum.forName(null));
         System.out.println(userDTOS);
     }
+
+    @Test
+    void test2(){
+        try {
+            int a = 7/0;
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+        System.out.println(321);
+    }
 }

@@ -2,7 +2,6 @@ package com.emrys.lotterysystem.dao.mapper;
 
 import com.emrys.lotterysystem.dao.dataobject.PrizeDO;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
@@ -21,6 +20,6 @@ public interface PrizeMapper {
     int countPrize();
     @Select("select * from prize order by id desc limit #{offset}, #{pageSize}")
     List<PrizeDO> selectPrizeList(@Param("offset") int offset, @Param("pageSize") Integer pageSize);
-    @Select("select count(*) from prize where id in (#{prizeIds})")
-    Long countByIds(List<Long> prizeIds);
+    Long countByIds(@Param("ids") List<Long> prizeIds);
+    List<PrizeDO> getPrizeListByIds(@Param("ids") List<Long> prizeIds);
 }
