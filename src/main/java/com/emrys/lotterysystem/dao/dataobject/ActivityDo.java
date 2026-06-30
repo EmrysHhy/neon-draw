@@ -1,0 +1,17 @@
+package com.emrys.lotterysystem.dao.dataobject;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+/**
+ *
+ * @author Emrys
+ * content:
+ */
+@EqualsAndHashCode(callSuper = true)
+@Data
+public class ActivityDo extends BaseDO{
+    private String activityName;
+    private String description;
+    private String status;
+}

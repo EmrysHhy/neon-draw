@@ -28,4 +28,6 @@ public interface UserMapper {
     @Select("select * from user where email = #{email}")
     UserDO selectByMail(String email);
     List<UserDO> selectUserListByIdentity(String identity);
+    @Select("select count(*) from user where id in (#{ids})")
+    Long countByIds(List<Long> ids);
 }

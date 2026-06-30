@@ -22,9 +22,15 @@ public interface ServiceErrorCodeConstants {
     ErrorCode USER_NOT_FOUND = new ErrorCode(112, "用户不存在");
 
     ErrorCode VARIFICATION_CODE_ERROR = new ErrorCode(113, "验证码错误");
-    //
-     //
-     //
+
+     //活动错误码
+    ErrorCode ACTIVITY_PARAM_EMPTY= new ErrorCode(301, "创建活动参数param为空");
+     //活动与人员错误码
+    ErrorCode ACTIVITY_USER_NOT_EXIST= new ErrorCode(401, "创建人员信息不存在");
+     //活动与奖品错误码
+     ErrorCode ACTIVITY_PRIZE_NOT_EXIST= new ErrorCode(501, "创建奖品信息信息不存在");
+    ErrorCode ACTIVITY_PRIZE_TOO_MACH = new ErrorCode(502, "奖品数量太多");
+    ErrorCode ACTIVITY_PRIZE_TIER_ERROR = new ErrorCode(503, "奖品等级错误");
     //图片错误码
-    ErrorCode PICTURE_UPLOAD_FAILED = new ErrorCode(500, "图片上传失败");
+    ErrorCode PICTURE_UPLOAD_FAILED = new ErrorCode(601, "图片上传失败");
 }

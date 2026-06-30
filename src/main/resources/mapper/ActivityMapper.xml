@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.emrys.lotterysystem.dao.mapper.ActivityMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into activity (activity_name, status
+        <if test=" description != null">,description</if>
+        )
+        values (#{activityName}, #{status}
+        <if test=" description != null">,#{description}</if>
+        )
+    </insert>
+</mapper>
