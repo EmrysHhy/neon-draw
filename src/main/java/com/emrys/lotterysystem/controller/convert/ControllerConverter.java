@@ -66,7 +66,10 @@ public class ControllerConverter {
         findPrizeListResult.setTotal(pageListDTO.getTotal());
         List<PrizeDTO> prizeDTOS = pageListDTO.getRecords();
         if (prizeDTOS != null) {
-            findPrizeListResult.setRecords(prizeDTOS.stream().filter(Objects::nonNull).map(prizeDTO -> {
+            findPrizeListResult.setRecords(
+                    prizeDTOS.stream()
+                            .filter(Objects::nonNull)
+                            .map(prizeDTO -> {
                 FindPrizeListResult.PrizeInfo prizeInfo = new FindPrizeListResult.PrizeInfo();
                 prizeInfo.setPrizeId(prizeDTO.getPrizeId());
                 prizeInfo.setPrizeName(prizeDTO.getPrizeName());
@@ -90,6 +93,28 @@ public class ControllerConverter {
         }
         createActivityResult result = new createActivityResult();
         result.setActivityId(activityDTO.getActivityId());
+        return result;
+    }
+
+    public static FindActivityListResult convertToFindActivityListResult(PageListDTO<ActivityDTO> activityDTOList) {
+        if(activityDTOList == null) {
+            log.info("find activity list failed, activityDTOList is null");
+            return null;
+        }
+        FindActivityListResult result = new FindActivityListResult();
+        result.setTotal(activityDTOList.getTotal());
+        List<ActivityDTO> activityDTOS = activityDTOList.getRecords();
+        result.setRecords(
+                activityDTOS.stream()
+                        .filter(Objects::nonNull)
+                        .map(activityDTO -> {
+            FindActivityListResult.ActivityInfo activityInfo = new FindActivityListResult.ActivityInfo();
+            activityInfo.setActivityId(activityDTO.getActivityId());
+            activityInfo.setActivityName(activityDTO.getActivityName());
+            activityInfo.setDescription(activityDTO.getDescription());
+            activityInfo.setValid(activityDTO.valid());
+            return activityInfo;
+        }).toList());
         return result;
     }
 }

@@ -1,8 +1,10 @@
 package com.emrys.lotterysystem.dao.mapper;
 
-import com.emrys.lotterysystem.dao.dataobject.ActivityDo;
-import org.apache.ibatis.annotations.Insert;
+import com.emrys.lotterysystem.dao.dataobject.ActivityDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
  *
@@ -12,5 +14,9 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface ActivityMapper {
 
-    int insert (ActivityDo activityDo);
+    int insert (ActivityDO activityDo);
+    @Select("select count(*) from activity")
+    int countActivity();
+    @Select("select * from activity order by id desc limit #{offset}, #{pageSize}")
+    List<ActivityDO> selectActivityList(int offset, Integer pageSize);
 }

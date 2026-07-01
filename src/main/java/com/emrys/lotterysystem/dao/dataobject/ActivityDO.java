@@ -10,7 +10,7 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class ActivityDo extends BaseDO{
+public class ActivityDO extends BaseDO{
     private String activityName;
     private String description;
     private String status;

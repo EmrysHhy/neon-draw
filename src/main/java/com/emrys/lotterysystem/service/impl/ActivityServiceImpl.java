@@ -6,15 +6,18 @@ import com.emrys.lotterysystem.common.utils.RedisUtil;
 import com.emrys.lotterysystem.controller.param.ActivityPrizeParam;
 import com.emrys.lotterysystem.controller.param.ActivityUserParam;
 import com.emrys.lotterysystem.controller.param.CreateActivityParam;
-import com.emrys.lotterysystem.dao.dataobject.ActivityDo;
+import com.emrys.lotterysystem.controller.param.PageParam;
+import com.emrys.lotterysystem.dao.dataobject.ActivityDO;
 import com.emrys.lotterysystem.dao.dataobject.ActivityPrizeDO;
 import com.emrys.lotterysystem.dao.dataobject.ActivityUserDO;
 import com.emrys.lotterysystem.dao.dataobject.PrizeDO;
 import com.emrys.lotterysystem.dao.mapper.*;
 import com.emrys.lotterysystem.service.ActivityService;
 import com.emrys.lotterysystem.service.convert.ServiceConverter;
+import com.emrys.lotterysystem.service.dto.ActivityDTO;
 import com.emrys.lotterysystem.service.dto.ActivityDetailDTO;
 import com.emrys.lotterysystem.service.dto.CreateActivityDTO;
+import com.emrys.lotterysystem.service.dto.PageListDTO;
 import com.emrys.lotterysystem.service.enums.ActivityPrizeStatusEnum;
 import com.emrys.lotterysystem.service.enums.ActivityStatusEnum;
 import com.emrys.lotterysystem.service.enums.PrizeTierEnum;
@@ -70,7 +73,7 @@ public class ActivityServiceImpl implements ActivityService {
         //1.校验信息
         checkActivityInfo(param);
         //2.保存activity到数据库
-        ActivityDo activityDo = new ActivityDo();
+        ActivityDO activityDo = new ActivityDO();
 
         activityDo.setActivityName(param.getActivityName());
         activityDo.setDescription(param.getDescription());
@@ -99,6 +102,21 @@ public class ActivityServiceImpl implements ActivityService {
         createActivityDTO.setActivityId(activityDo.getId());
         return createActivityDTO;
 
+    }
+
+    /**
+     * 获取活动的基本信息
+     * @param param
+     * @return
+     */
+    @Override
+    public PageListDTO<ActivityDTO> findActivityList(PageParam param) {
+        //1.获取活动总数
+        int total = activityMapper.countActivity();
+        //2.获取当前页面的活动列表
+        List<ActivityDO> activityDOList = activityMapper.selectActivityList(param.getOffset(), param.getPageSize());
+        List<ActivityDTO> activityDTOS = ServiceConverter.convertToActivityDTOList(activityDOList);
+        return new PageListDTO<>(total, activityDTOS);
     }
 
     /**

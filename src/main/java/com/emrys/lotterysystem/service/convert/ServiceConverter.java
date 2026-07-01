@@ -1,9 +1,9 @@
 package com.emrys.lotterysystem.service.convert;
 
-import ch.qos.logback.classic.Logger;
 import com.emrys.lotterysystem.controller.param.ActivityPrizeParam;
 import com.emrys.lotterysystem.controller.param.ActivityUserParam;
 import com.emrys.lotterysystem.dao.dataobject.*;
+import com.emrys.lotterysystem.service.dto.ActivityDTO;
 import com.emrys.lotterysystem.service.dto.ActivityDetailDTO;
 import com.emrys.lotterysystem.service.dto.PrizeDTO;
 import com.emrys.lotterysystem.service.dto.UserDTO;
@@ -103,7 +103,7 @@ public class ServiceConverter {
      * @return
      */
     public static ActivityDetailDTO convertToActivityDetailDTO(
-            ActivityDo activityDo,
+             ActivityDO activityDo,
             List<ActivityPrizeDO> activityPrizeDOS,
             List<PrizeDO> prizeDOList,
             List<ActivityUserDO> activityUserDOS) {
@@ -153,5 +153,27 @@ public class ServiceConverter {
         activityDetailDTO.setUserList(userDetails);
 
         return activityDetailDTO;
+    }
+
+    /**
+     * 将 ActivityDO 列表转换为 ActivityDTO 列表
+     * @param activityDOList
+     * @return
+     */
+    public static List<ActivityDTO> convertToActivityDTOList(List<ActivityDO> activityDOList) {
+        if (activityDOList == null) {
+            log.info("activityDOList is null, returning empty list");
+            return List.of();
+        }
+        return activityDOList.stream()
+                .filter(Objects::nonNull)
+                .map(activityDO -> {
+                    ActivityDTO activityDTO = new ActivityDTO();
+                    activityDTO.setActivityId(activityDO.getId());
+                    activityDTO.setActivityName(activityDO.getActivityName());
+                    activityDTO.setDescription(activityDO.getDescription());
+                    activityDTO.setStatus(ActivityStatusEnum.forName(activityDO.getStatus()));
+                    return activityDTO;
+                }).toList();
     }
 }

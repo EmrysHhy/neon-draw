@@ -17,8 +17,7 @@ public class FindPrizeListResult implements Serializable {
     private List<PrizeInfo> records;//奖品列表
 
     /**
-     * @author Emrys
-     * content:奖品信息
+     * 奖品信息
      */
     @Data
     public static class PrizeInfo implements Serializable {
