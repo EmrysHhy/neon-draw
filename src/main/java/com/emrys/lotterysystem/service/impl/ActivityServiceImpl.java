@@ -124,6 +124,12 @@ public class ActivityServiceImpl implements ActivityService {
         }
 
     }
+
+    /**
+     * 从redis中获取活动详情
+     * @param activityId
+     * @return
+     */
     public ActivityDetailDTO getActivityDetailDTO(Long activityId) {
 
         String key = pre + activityId;

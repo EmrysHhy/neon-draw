@@ -20,4 +20,6 @@ public interface PrizeService {
      * @return
      */
     PageListDTO<PrizeDTO> findPrizeList(PageParam param);
+
+    PageListDTO<PrizeDTO> findAllPrizeList();
 }

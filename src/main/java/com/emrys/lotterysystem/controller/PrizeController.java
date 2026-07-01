@@ -50,4 +50,11 @@ public class PrizeController {
         FindPrizeListResult ret = ControllerConverter.convertToFindPrizeListResult(pageListDTO);
         return CommonResult.success(ret);
     }
+    @RequestMapping("/prize/all-list")
+    public CommonResult<FindPrizeListResult> findAllPrizeList(){
+        log.info("find all prize list");
+        PageListDTO<PrizeDTO> pageListDTO = prizeService.findAllPrizeList(); //其实也是分页查询,只不过现在只有一页而已
+        FindPrizeListResult ret = ControllerConverter.convertToFindPrizeListResult(pageListDTO);
+        return CommonResult.success(ret);
+    }
 }

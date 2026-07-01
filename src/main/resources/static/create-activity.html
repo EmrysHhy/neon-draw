@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>创建抽奖活动</title>
-    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="./css/base.css">
     <link rel="stylesheet" href="./css/toastr.min.css">
     <style>
@@ -191,7 +191,7 @@
 <script src="./js/toastr.min.js"></script>
 <script>
     var userToken = localStorage.getItem("user_token");
-    // 初始时奖品列表为空
+    // 初始时奖品列表为空: 勾选的奖品存放
     var selectedPrizes = [];
     // 显示奖品选择模态框
     function showPrizesModal() {
@@ -204,12 +204,13 @@
     // 获取奖品列表的函数
     function fetchPrizes() {
         $.ajax({
-            url: '',
-            type: '',
+            url: '/prize/all-list',
+            type: 'GET',
             dataType: 'json',
             data: { currentPage: 1, pageSize: 100},
             headers: {
                 // jwt
+                "user_token": userToken
             },
             success: function(result) {
                 var prizes = result.data.records;
@@ -266,7 +267,7 @@
         }
     }
 
-    // 初始时人员列表为空
+    // 初始时人员列表为空, 存放的勾选的人员信息
     var selectedUsers = [];
     // 显示人员选择模态框
     function showUsersModal() {
@@ -279,12 +280,13 @@
     // 获取人员列表的函数
     function fetchUsers() {
         $.ajax({
-            url: '',
-            type: '',
+            url: 'user/base-user/find-list',
+            type: 'GET',
             dataType: 'json',
-            data: { identity: '' },
+            data: { identity: 'NORMAL' },
             headers: {
                 // jwt
+                "user_token": userToken
             },
             success: function(result) {
                 var users = result.data;
@@ -380,12 +382,13 @@
     // 提交活动信息接口
     function submitActivity(data){
         $.ajax({
-            url: '',
-            type: '',
+            url: '/activity/create',
+            type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(data),
             headers: {
                 // jwt
+                "user_token": userToken
             },
             success: function(result) {
                 if (result.code != 200) {
@@ -397,9 +400,17 @@
                         from:'activities-list.html',
                         id:'#activitiesList'
                     },'*');
-
                 }
             },
+            error:function(err){
+                console.log(err);
+                if(err!=null && err.status==401){
+                    alert("用户未登录, 即将跳转到登录页!");
+                    // 跳转登录页
+                    window.location.href = "/blogin.html";
+                    window.parent.location.href = "/blogin.html";//让父页面一起跳转
+                }
+            }
         });
     }
     // 获取奖品/人员列表并填充模态框

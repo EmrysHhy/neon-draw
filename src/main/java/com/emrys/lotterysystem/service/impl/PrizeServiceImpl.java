@@ -63,4 +63,19 @@ public class PrizeServiceImpl implements PrizeService {
         List<PrizeDTO> prizeDTOS = ServiceConverter.convertToPrizeDTOList(prizeDOList);
         return new PageListDTO<>(totalCount,prizeDTOS);
     }
+
+    /**
+     * 查询所有奖品
+     * @return
+     */
+    @Override
+    public PageListDTO<PrizeDTO> findAllPrizeList() {
+        //1.获得奖品总数
+        int totalCount = prizeMapper.countPrize();
+        //2.获得所有奖品
+        List<PrizeDO> prizeDOList = prizeMapper.selectAllPrzieList();
+        //3.将PrizeDO转换为PrizeDTO
+        List<PrizeDTO> prizeDTOS = ServiceConverter.convertToPrizeDTOList(prizeDOList);
+        return new PageListDTO<>(totalCount,prizeDTOS);
+    }
 }

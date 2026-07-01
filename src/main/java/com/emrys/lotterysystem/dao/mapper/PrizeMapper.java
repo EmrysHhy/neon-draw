@@ -2,8 +2,10 @@ package com.emrys.lotterysystem.dao.mapper;
 
 import com.emrys.lotterysystem.dao.dataobject.PrizeDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -22,4 +24,8 @@ public interface PrizeMapper {
     List<PrizeDO> selectPrizeList(@Param("offset") int offset, @Param("pageSize") Integer pageSize);
     Long countByIds(@Param("ids") List<Long> prizeIds);
     List<PrizeDO> getPrizeListByIds(@Param("ids") List<Long> prizeIds);
+
+    @Select("select * from prize")
+    @Options(useGeneratedKeys=true,keyProperty="id",keyColumn="id")  //可以将自增id加入到userDO中
+    List<PrizeDO> selectAllPrzieList();
 }
