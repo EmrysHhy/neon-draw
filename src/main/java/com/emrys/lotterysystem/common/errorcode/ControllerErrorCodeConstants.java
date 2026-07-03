@@ -14,4 +14,5 @@ public interface ControllerErrorCodeConstants {
     ErrorCode FIND_PRIZE_LIST_ERROR = new ErrorCode(300,"查询奖品列表失败");
     //活动错误码
     ErrorCode CREATE_ACTIVITY_ERROR = new ErrorCode(400,"活动创建失败");;
+    ErrorCode FIND_ACTIVITY_DETAIL_ERROR = new ErrorCode(402, "查询活动详情失败");
 }

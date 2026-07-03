@@ -18,7 +18,6 @@ import com.emrys.lotterysystem.service.dto.ActivityDTO;
 import com.emrys.lotterysystem.service.dto.ActivityDetailDTO;
 import com.emrys.lotterysystem.service.dto.CreateActivityDTO;
 import com.emrys.lotterysystem.service.dto.PageListDTO;
-import com.emrys.lotterysystem.service.enums.ActivityPrizeStatusEnum;
 import com.emrys.lotterysystem.service.enums.ActivityStatusEnum;
 import com.emrys.lotterysystem.service.enums.PrizeTierEnum;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,6 +27,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static com.emrys.lotterysystem.service.constants.RedisConstant.ACTIVITY_DETAIL_;
 
 /**
  *
@@ -51,10 +52,7 @@ public class ActivityServiceImpl implements ActivityService {
     RedisUtil redisUtil;
     @Autowired
     ObjectMapper objectMapper;
-    /**
-     * keyPre
-     */
-    private final  String  pre = "activity_detail_";
+
 
     /**
      * 活动最大持续时间
@@ -119,10 +117,23 @@ public class ActivityServiceImpl implements ActivityService {
         return new PageListDTO<>(total, activityDTOS);
     }
 
+    @Override
+    public ActivityDetailDTO findActivityDetail(Long activityId) {
+        if (activityId == null) {
+            throw new ServiceException(ServiceErrorCodeConstants.ACTIVITY_ID_EMPTY);
+        }
+        ActivityDetailDTO activityDetailDTO = getActivityDetailDTO(activityId); //从缓存中获取
+        if (activityDetailDTO == null || activityDetailDTO.getActivityId() == null) {
+            throw new ServiceException(ServiceErrorCodeConstants.ACTIVITY_NOT_FOUND);
+        }
+        return activityDetailDTO;
+    }
+
     /**
      * 将活动详情缓存到redis中
      * @param activityDetailDTO
      */
+    @Override
     public void cacheActivityDetail(ActivityDetailDTO activityDetailDTO) {
         //key :   activity_detail_ + (#{id})
         //value : activityDetailDTO(json)
@@ -135,7 +146,7 @@ public class ActivityServiceImpl implements ActivityService {
         }
         try {
 
-            redisUtil.set(pre + activityDetailDTO.getActivityId(), objectMapper.writeValueAsString(activityDetailDTO), ACTIVITY_TIMEOUT);
+            redisUtil.set(ACTIVITY_DETAIL_ + activityDetailDTO.getActivityId(), objectMapper.writeValueAsString(activityDetailDTO), ACTIVITY_TIMEOUT);
         } catch (Exception e) {
             log.error("cache activity detail failed, activityDetailDTO is {}, error is {}", activityDetailDTO, e.getMessage());
             //不抛异常,缓存加入失败在后续可以再次加入缓存
@@ -149,23 +160,67 @@ public class ActivityServiceImpl implements ActivityService {
      * @return
      */
     public ActivityDetailDTO getActivityDetailDTO(Long activityId) {
-
-        String key = pre + activityId;
+        String key = ACTIVITY_DETAIL_ + activityId;
         String value = redisUtil.get(key);
-        ActivityDetailDTO ret = new ActivityDetailDTO();
         try {
-            if(value == null){
-                log.warn("get activity detail from redis failed, key is {}, value is null", key);
-                //TODO 应当去重新创建redis
+            if (value != null) {
+                return objectMapper.readValue(value, ActivityDetailDTO.class); //成功从缓存中获取
             }
-            ret =  objectMapper.readValue(value, ActivityDetailDTO.class);
-
         } catch (Exception e) {
-            log.error("get activity detail from redis failed, key is {}, value is {}, error is {}", key, value, e.getMessage());
-            //throw new ServiceException(ServiceErrorCodeConstants.ACTIVITY_DETAIL_CACHE_ERROR2);
-            //不抛出异常,缓存只是加速,还有查询数据库的方式
+            log.error("get activity detail from redis failed, key is {}, error is {}", key, e.getMessage());
         }
+        return loadActivityDetailFromDb(activityId);
+    }
+
+    /**
+     * 从数据库获取细节
+     * @param activityId
+     * @return
+     */
+    @Override
+    public ActivityDetailDTO loadActivityDetailFromDb(Long activityId) {
+        log.info("无法从缓存中获取活动详情,从数据库中加载, activityId: {}", activityId);
+        ActivityDetailDTO ret = queryActivityDetailFromDb(activityId);
+        cacheActivityDetail(ret);
         return ret;
+    }
+
+    @Override
+    public void refreshActivityDetailCache(Long activityId) {
+        ActivityDetailDTO activityDetailDTO = queryActivityDetailFromDb(activityId);
+        if (activityDetailDTO == null) {
+            throw new ServiceException(ServiceErrorCodeConstants.ACTIVITY_NOT_FOUND);
+        }
+        putActivityDetailCacheStrict(activityDetailDTO);
+    }
+
+    private ActivityDetailDTO queryActivityDetailFromDb(Long activityId) {
+        ActivityDO activityDo = activityMapper.selectById(activityId);
+        if (activityDo == null) {
+            return null;
+        }
+        List<ActivityPrizeDO> activityPrizeDOS = activityPrizeMapper.selectActivityPrizeDOListByActivityId(activityId);
+        List<PrizeDO> prizeDOList = prizeMapper.selectPrizeListByActivityId(activityId);
+        List<ActivityUserDO> activityUserDOS = activityUserMapper.selectActivityUserDOListByActivityId(activityId);
+        return ServiceConverter.convertToActivityDetailDTO(
+                activityDo, activityPrizeDOS, prizeDOList, activityUserDOS);
+    }
+
+    private void putActivityDetailCacheStrict(ActivityDetailDTO activityDetailDTO) {
+        try {
+            boolean success = redisUtil.set(
+                    ACTIVITY_DETAIL_ + activityDetailDTO.getActivityId(),
+                    objectMapper.writeValueAsString(activityDetailDTO),
+                    ACTIVITY_TIMEOUT);
+            if (!success) {
+                throw new ServiceException(ServiceErrorCodeConstants.ACTIVITY_DETAIL_CACHE_ERROR);
+            }
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("refresh activity detail cache failed, activityId: {}", activityDetailDTO.getActivityId(), e);
+            throw new ServiceException(ServiceErrorCodeConstants.ACTIVITY_DETAIL_CACHE_ERROR);
+        }
     }
 
     /**

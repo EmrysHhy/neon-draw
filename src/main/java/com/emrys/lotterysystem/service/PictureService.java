@@ -3,9 +3,11 @@ package com.emrys.lotterysystem.service;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
+ * 图片上传服务接口。
+ * <p>
+ * 负责接收前端上传的图片文件，保存到本地磁盘并返回唯一文件名（供奖品等模块引用）。
  *
  * @author Emrys
- * content:
  */
 public interface PictureService {
     /**

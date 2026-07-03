@@ -50,6 +50,15 @@ spring:
           # 连接用完时，新的请求等待时间，超过该时间抛出异常 JedisConnectionException（默认-1，负值表示没有限制）
           max-wait: 5s
 
+  ## mq ##
+  rabbitmq:
+    listener:
+      simple:
+        acknowledge-mode: auto  # 消息确认机制，默认 auto
+        retry:
+          enabled: true         # 开启失败重试
+          max-attempts: 5       # 最多重试 5 次
+
 mybatis:
   mapper-locations: classpath:mapper/*.xml
   configuration:
@@ -59,5 +68,13 @@ mybatis:
 logging:
   config: classpath:logback-spring.xml
 
-
+## 异步线程池（配合 ExecutorConfig 使用，Bean 名称：asyncServiceExecutor） ##
+async:
+  executor:
+    thread:
+      core_pool_size: 5        # 核心线程数
+      max_pool_size: 10        # 最大线程数
+      queue_capacity: 100      # 任务队列容量
+      name:
+        prefix: lottery-async- # 线程名前缀，便于日志排查
 

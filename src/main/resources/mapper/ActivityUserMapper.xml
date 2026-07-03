@@ -11,4 +11,21 @@
             (#{item.activityId}, #{item.userId}, #{item.userName}, #{item.status})
         </foreach>
     </insert>
+    <select id="selectByActivityIdAndUserIds" resultType="com.emrys.lotterysystem.dao.dataobject.ActivityUserDO">
+        select * from activity_user
+        where activity_id = #{activityId}
+        and user_id in
+        <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </select>
+    <update id="updateStatusByActivityIdAndUserIds">
+        update activity_user
+        set status = #{status}
+        where activity_id = #{activityId}
+        and user_id in
+        <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </update>
 </mapper>

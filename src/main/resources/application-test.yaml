@@ -3,6 +3,12 @@ spring:
     url: jdbc:mysql://<测试环境数据库IP>:3306/lottery_system?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
     username: <测试环境用户名>
     password: <测试环境密码>
+  rabbitmq:
+    host: 115.28.210.98
+    port: 5672
+    username: admin
+    password: admin
+    virtual-host: lottery-system
 
 logging:
   level:

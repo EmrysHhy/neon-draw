@@ -7,11 +7,14 @@ import com.emrys.lotterysystem.common.utils.EmailUtil;
 import com.emrys.lotterysystem.common.utils.RedisUtil;
 import com.emrys.lotterysystem.common.utils.RegexUtil;
 import com.emrys.lotterysystem.service.VarificationCodeService;
+import com.emrys.lotterysystem.service.constants.RedisConstant;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
+
+import static com.emrys.lotterysystem.service.constants.RedisConstant.VARIFICATION_CODE_;
 
 /**
  *
@@ -21,7 +24,6 @@ import java.io.UnsupportedEncodingException;
 @Service
 public class VarificationCodeServiceImpl implements VarificationCodeService {
     //定义key的前缀
-    private static final String KEY_PRE = "varification_code_";
     private static final Long SUSTAINABLE_TIM = 300L;
     @Autowired
     private RedisUtil redisUtil;
@@ -48,7 +50,7 @@ public class VarificationCodeServiceImpl implements VarificationCodeService {
             throw new ServiceException(ServiceErrorCodeConstants.MAIL_SEND_ERROR);
         }
         //缓存验证码
-        redisUtil.set(KEY_PRE + email, captcha, SUSTAINABLE_TIM); // 设置过期时间为5分钟
+        redisUtil.set(VARIFICATION_CODE_ + email, captcha, SUSTAINABLE_TIM); // 设置过期时间为5分钟
     }
 
     /**
@@ -62,6 +64,6 @@ public class VarificationCodeServiceImpl implements VarificationCodeService {
         if (!RegexUtil.checkMail(email)) {
             throw new ServiceException(ServiceErrorCodeConstants.MAIL_ERROR);
         }
-        return redisUtil.get(KEY_PRE + email);
+        return redisUtil.get(VARIFICATION_CODE_ + email);
     }
 }

@@ -3,9 +3,13 @@ package com.emrys.lotterysystem.controller.convert;
 import com.emrys.lotterysystem.common.errorcode.ControllerErrorCodeConstants;
 import com.emrys.lotterysystem.common.exception.ControllerException;
 import com.emrys.lotterysystem.controller.result.*;
+import com.emrys.lotterysystem.dao.dataobject.WinningRecordDO;
 import com.emrys.lotterysystem.service.dto.*;
+import com.emrys.lotterysystem.service.enums.PrizeTierEnum;
 import lombok.extern.slf4j.Slf4j;
 
+import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -116,5 +120,92 @@ public class ControllerConverter {
             return activityInfo;
         }).toList());
         return result;
+    }
+
+    public static ActivityDetailResult convertToActivityDetailResult(ActivityDetailDTO activityDetailDTO) {
+        if (activityDetailDTO == null || activityDetailDTO.getActivityId() == null) {
+            log.error("find activity detail failed, activityDetailDTO is null");
+            throw new ControllerException(ControllerErrorCodeConstants.FIND_ACTIVITY_DETAIL_ERROR);
+        }
+        ActivityDetailResult result = new ActivityDetailResult();
+        result.setActivityId(activityDetailDTO.getActivityId());
+        result.setActivityName(activityDetailDTO.getActivityName());
+        result.setDesc(activityDetailDTO.getDesc());
+        result.setValid(activityDetailDTO.validActivity());
+
+        List<ActivityDetailDTO.PrizeDetail> prizeList = activityDetailDTO.getPrizeList();
+        if (prizeList != null) {
+            result.setPrizes(prizeList.stream()
+                    .filter(Objects::nonNull)
+                    .sorted(Comparator.comparingInt(ControllerConverter::getPrizeTierCode))
+                    .map(prize -> {
+                        ActivityDetailResult.PrizeDetail prizeDetail = new ActivityDetailResult.PrizeDetail();
+                        prizeDetail.setPrizeId(prize.getPrizeId());
+                        prizeDetail.setName(prize.getPrizeName());
+                        prizeDetail.setPrizeTierName(resolvePrizeTierMessage(prize));
+                        prizeDetail.setImageUrl(prize.getImageUrl());
+                        prizeDetail.setPrizeAmount(prize.getPrizeAmount());
+                        prizeDetail.setValid(prize.validPrize());
+                        return prizeDetail;
+                    }).toList());
+        }
+
+        List<ActivityDetailDTO.UserDetail> userList = activityDetailDTO.getUserList();
+        if (userList != null) {
+            result.setUsers(userList.stream()
+                    .filter(Objects::nonNull)
+                    .map(user -> {
+                        ActivityDetailResult.UserDetail userDetail = new ActivityDetailResult.UserDetail();
+                        userDetail.setUserId(user.getUserId());
+                        userDetail.setUserName(user.getUserName());
+                        userDetail.setValid(user.validUser());
+                        return userDetail;
+                    }).toList());
+        }
+        return result;
+    }
+
+    private static int getPrizeTierCode(ActivityDetailDTO.PrizeDetail prize) {
+        if (prize == null || prize.getTiers() == null || prize.getTiers().getCode() == null) {
+            return Integer.MAX_VALUE;
+        }
+        return prize.getTiers().getCode();
+    }
+
+    private static String resolvePrizeTierMessage(ActivityDetailDTO.PrizeDetail prize) {
+        if (prize == null) {
+            return null;
+        }
+        if (prize.getPrizeTierName() != null) {
+            return prize.getPrizeTierName();
+        }
+        if (prize.getTiers() != null && prize.getTiers().getMessage() != null) {
+            return prize.getTiers().getMessage();
+        }
+        return null;
+    }
+
+    /**
+     * 将 WinningRecordDO 转换为 SendWinnerEmailResult
+     */
+    public static SendWinnerEmailResult convertToSendWinnerEmailResult(WinningRecordDO record) {
+        if (record == null) {
+            return null;
+        }
+        SendWinnerEmailResult result = new SendWinnerEmailResult();
+        result.setTo(record.getWinnerEmail());
+        result.setWinnerName(record.getWinnerName());
+        result.setActivityName(record.getActivityName());
+        result.setPrizeName(record.getPrizeName());
+        result.setPrizeTierMessage(resolvePrizeTierMessage(record.getPrizeTier()));
+        if (record.getWinningTime() != null) {
+            result.setWinningTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(record.getWinningTime()));
+        }
+        return result;
+    }
+
+    private static String resolvePrizeTierMessage(String prizeTier) {
+        PrizeTierEnum tier = PrizeTierEnum.forName(prizeTier);
+        return tier != null ? tier.getMessage() : prizeTier;
     }
 }

@@ -4,6 +4,9 @@ import org.springframework.util.StringUtils;
 
 import java.util.regex.Pattern;
 
+/**
+ * 正则表达式校验
+ */
 
 public class RegexUtil {
 

@@ -12,4 +12,9 @@
         <if test=" description != null">,#{description}</if>
         )
     </insert>
+    <update id="updateStatusById">
+        update activity
+        set status = #{status}
+        where id = #{activityId}
+    </update>
 </mapper>

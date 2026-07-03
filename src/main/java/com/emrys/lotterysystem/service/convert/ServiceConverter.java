@@ -108,6 +108,19 @@ public class ServiceConverter {
             List<PrizeDO> prizeDOList,
             List<ActivityUserDO> activityUserDOS) {
 
+        if (activityDo == null) {
+            return null;
+        }
+        if (activityPrizeDOS == null) {
+            activityPrizeDOS = List.of();
+        }
+        if (prizeDOList == null) {
+            prizeDOList = List.of();
+        }
+        if (activityUserDOS == null) {
+            activityUserDOS = List.of();
+        }
+
         ActivityDetailDTO activityDetailDTO = new ActivityDetailDTO();
         activityDetailDTO.setActivityId(activityDo.getId());
         activityDetailDTO.setActivityName(activityDo.getActivityName());
@@ -134,10 +147,16 @@ public class ServiceConverter {
                     detail.setPrice(prizeDO.getPrice());
                     detail.setDescription(prizeDO.getDescription());
                     detail.setPrizeAmount(ap.getPrizeAmount().longValue());
-                    detail.setTiers(PrizeTierEnum.forName(ap.getPrizeTiers()));
+                    PrizeTierEnum tier = PrizeTierEnum.forName(ap.getPrizeTiers());
+                    detail.setTiers(tier);
+                    if (tier != null) {
+                        detail.setPrizeTierName(tier.getMessage());
+                    }
                     detail.setStatus(ActivityPrizeStatusEnum.forName(ap.getStatus()));
                     return detail;
-                }).toList();
+                })
+                .filter(Objects::nonNull)
+                .toList();
         activityDetailDTO.setPrizeList(prizeDetails);
 
         // 人员列表：直接从 ActivityUserDO 映射

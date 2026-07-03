@@ -39,6 +39,7 @@ public class ActivityDetailDTO {
         private String description;
         private Long prizeAmount; //奖品数量
         private PrizeTierEnum tiers; //奖品等级
+        private String prizeTierName; //奖品等级名称，如：一等奖
         private ActivityPrizeStatusEnum status; //奖品状态
         //还未被抽出
         public Boolean validPrize(){

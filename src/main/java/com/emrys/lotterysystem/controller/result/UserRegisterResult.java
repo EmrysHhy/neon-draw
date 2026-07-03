@@ -17,10 +17,4 @@ import java.io.Serializable;
 @Slf4j
 public class UserRegisterResult implements Serializable {
     Long userId;
-    /**
-     * 类型转换
-     * @param userRegisterDTO ->
-     * @return
-     */
-
 }

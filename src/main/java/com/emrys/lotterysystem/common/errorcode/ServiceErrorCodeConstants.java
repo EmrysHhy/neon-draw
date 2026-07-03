@@ -27,12 +27,21 @@ public interface ServiceErrorCodeConstants {
     ErrorCode ACTIVITY_PARAM_EMPTY= new ErrorCode(301, "创建活动参数param为空");
     ErrorCode ACTIVITY_DETAIL_CACHE_ERROR= new ErrorCode(302, "添加缓存失败");
     ErrorCode ACTIVITY_DETAIL_CACHE_ERROR2= new ErrorCode(303, "获取缓存失败");
+    ErrorCode ACTIVITY_ID_EMPTY = new ErrorCode(304, "活动id为空");
+    ErrorCode ACTIVITY_NOT_FOUND = new ErrorCode(305, "活动不存在");
+    ErrorCode ACTIVITY_NOT_RUNNING = new ErrorCode(306, "活动当前不在运行中");
+    ErrorCode STATUS_CONVERT_FAIL = new ErrorCode(307, "状态转换失败");
      //活动与人员错误码
     ErrorCode ACTIVITY_USER_NOT_EXIST= new ErrorCode(401, "创建人员信息不存在");
+    ErrorCode ACTIVITY_WINNER_NOT_IN_ACTIVITY = new ErrorCode(402, "中奖人员不在活动参与人员中");
+    ErrorCode ACTIVITY_WINNER_INVALID_STATUS = new ErrorCode(403, "中奖人员状态无效，存在已中奖人员");
      //活动与奖品错误码
      ErrorCode ACTIVITY_PRIZE_NOT_EXIST= new ErrorCode(501, "创建奖品信息信息不存在");
     ErrorCode ACTIVITY_PRIZE_TOO_MACH = new ErrorCode(502, "奖品数量太多");
     ErrorCode ACTIVITY_PRIZE_TIER_ERROR = new ErrorCode(503, "奖品等级错误");
+    ErrorCode ACTIVITY_PRIZE_ALREADY_DRAW = new ErrorCode(504, "奖品已经被抽取");
+    ErrorCode ACTIVITY_PRIZE_AMOUNT_EXCEED_WINNER = new ErrorCode(505, "奖品数量大于中奖人员数量");
+    ErrorCode WINNING_RECORD_CACHE_ERROR = new ErrorCode(506, "中奖记录缓存失败");
     //图片错误码
     ErrorCode PICTURE_UPLOAD_FAILED = new ErrorCode(601, "图片上传失败");
 }

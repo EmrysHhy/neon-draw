@@ -7,14 +7,15 @@ import com.emrys.lotterysystem.service.dto.UserDTO;
 import com.emrys.lotterysystem.service.dto.UserLoginDTO;
 import com.emrys.lotterysystem.service.dto.UserRegisterDTO;
 import com.emrys.lotterysystem.service.enums.UserIdentityEnum;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 /**
+ * 用户业务服务接口。
+ * <p>
+ * 负责用户注册、登录（密码/验证码）以及按身份查询用户列表。
  *
  * @author Emrys
- * content:Service接口
  */
 public interface UserService {
     /**
@@ -23,11 +24,17 @@ public interface UserService {
     UserRegisterDTO register(UserRegisterParam param);
 
     /**
-     * 密码登录和验证码登录接口
-     * @return UserLoginDTO
+     * 密码登录。
      */
     UserLoginDTO login(UserPasswordLoginParam userPasswordLoginParam);
+
+    /**
+     * 验证码登录。
+     */
     UserLoginDTO login(UserVarificationLoginParam userVarificationLoginParam);
 
+    /**
+     * 按用户身份查询用户列表。
+     */
     List<UserDTO> findUserInfo(UserIdentityEnum userIdentityEnum);
 }

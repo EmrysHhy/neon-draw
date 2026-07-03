@@ -18,7 +18,4 @@ public class BaseUserInfoResult implements Serializable {
     private String userName;
     private String identity;
 
-
-
-
 }

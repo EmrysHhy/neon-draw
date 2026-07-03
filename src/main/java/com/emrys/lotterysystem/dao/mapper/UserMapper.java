@@ -29,4 +29,6 @@ public interface UserMapper {
     UserDO selectByMail(String email);
     List<UserDO> selectUserListByIdentity(String identity);
     Long countByIds(@Param("ids") List<Long> ids);
+
+    List<UserDO> selectByIds(@Param("ids") List<Long> ids);
 }
