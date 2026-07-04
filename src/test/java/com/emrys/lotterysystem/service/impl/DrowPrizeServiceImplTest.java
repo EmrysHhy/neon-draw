@@ -2,6 +2,8 @@ package com.emrys.lotterysystem.service.impl;
 
 import com.emrys.lotterysystem.controller.param.DrawPrizeParam;
 
+import com.emrys.lotterysystem.controller.param.ShowWinningRecordsParam;
+import com.emrys.lotterysystem.service.dto.ShowWinningRecordsDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,7 +19,7 @@ import java.util.List;
 class DrowPrizeServiceImplTest {
 
     @Autowired
-    DrawPrizeServiceImpl drowPrizeService;
+    DrawPrizeServiceImpl drawPrizeService;
 
     @Test
     void drowPrize() {
@@ -31,6 +33,15 @@ class DrowPrizeServiceImplTest {
         param.setWinningTime(new Date());
         param.setWinnerList(List.of(winner));
 
-        drowPrizeService.drowPrize(param);
+        drawPrizeService.drawPrize(param);
     }
+    @Test
+    void show(){
+        ShowWinningRecordsParam param = new ShowWinningRecordsParam();
+        param.setActivityId(33L);
+        List<ShowWinningRecordsDTO> showWinningRecordsDTOS = drawPrizeService.showWinningRecords(param);
+        System.out.println(111111);
+        System.out.println(showWinningRecordsDTOS.toString());
+    }
+
 }

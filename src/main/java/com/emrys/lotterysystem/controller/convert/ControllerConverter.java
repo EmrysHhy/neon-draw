@@ -208,4 +208,27 @@ public class ControllerConverter {
         PrizeTierEnum tier = PrizeTierEnum.forName(prizeTier);
         return tier != null ? tier.getMessage() : prizeTier;
     }
+
+    /**
+     * ' 将 ShowWinningRecordsDTO 列表转换为 ShowWinningResult 列表
+     * @return
+     */
+    public static List<ShowWinningResult> convertToShowWinningResultList(List<ShowWinningRecordsDTO> showWinningRecordsDTO) {
+        if (showWinningRecordsDTO == null) {
+            return List.of();
+        }
+        return showWinningRecordsDTO
+                .stream()
+                .filter(Objects::nonNull)
+                .map(dto -> {
+            ShowWinningResult result = new ShowWinningResult();
+            result.setWinnerId(dto.getWinnerId());
+            result.setWinnerName(dto.getWinnerName());
+            result.setPrizeName(dto.getPrizeName());
+            result.setPrizeTier(dto.getPrizeTier() != null ? dto.getPrizeTier().name() : null);
+            result.setWinningTime(dto.getWinningTime());
+            return result;
+        }).toList();
+
+    }
 }

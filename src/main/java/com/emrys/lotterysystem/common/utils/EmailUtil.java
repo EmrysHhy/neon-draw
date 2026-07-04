@@ -107,10 +107,6 @@ public class EmailUtil {
                 "                        <td style=\"padding: 10px 0; font-size: 18px; font-weight: bold; color: #333; border-top: 1px dashed #ffe0b2;\">" + prizeName + "</td>" +
                 "                    </tr>" +
                 "                    <tr>" +
-                "                        <td style=\"padding: 10px 0; font-size: 14px; color: #999; border-top: 1px dashed #ffe0b2;\">活动时间</td>" +
-                "                        <td style=\"padding: 10px 0; font-size: 15px; color: #666; border-top: 1px dashed #ffe0b2;\">" + activityName + "</td>" +
-                "                    </tr>" +
-                "                    <tr>" +
                 "                        <td style=\"padding: 10px 0; font-size: 14px; color: #999; border-top: 1px dashed #ffe0b2;\">中奖时间</td>" +
                 "                        <td style=\"padding: 10px 0; font-size: 15px; color: #666; border-top: 1px dashed #ffe0b2;\">" + winningTime + "</td>" +
                 "                    </tr>" +

@@ -53,6 +53,23 @@ public class RedisUtil {
 
     }
 
+    /**
+     * key 不存在时写入并设置过期时间（用于防重复提交）
+     */
+    public boolean setIfAbsent(String key, String value, Long timeoutSeconds) {
+        if (!StringUtils.hasText(key)) {
+            return false;
+        }
+        try {
+            Boolean success = stringRedisTemplate.opsForValue()
+                    .setIfAbsent(key, value, timeoutSeconds, TimeUnit.SECONDS);
+            return Boolean.TRUE.equals(success);
+        } catch (Exception e) {
+            log.error("RedisUtil setIfAbsent error: {}", e.getMessage());
+            return false;
+        }
+    }
+
 
     public String get(String key){
         if(!StringUtils.hasText(key)){

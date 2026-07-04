@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.emrys</groupId>
     <artifactId>lottery-system</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>lottery-system</name>
     <description>lottery-system</description>
     <url/>

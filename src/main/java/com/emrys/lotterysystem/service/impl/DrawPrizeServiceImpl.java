@@ -5,16 +5,20 @@ import com.emrys.lotterysystem.common.exception.ServiceException;
 import com.emrys.lotterysystem.common.utils.RedisUtil;
 import com.emrys.lotterysystem.controller.param.DrawPrizeParam;
 
+import com.emrys.lotterysystem.controller.param.ShowWinningRecordsParam;
 import com.emrys.lotterysystem.dao.dataobject.*;
 import com.emrys.lotterysystem.dao.mapper.*;
 import com.emrys.lotterysystem.service.DrawPrizeService;
 import com.emrys.lotterysystem.service.ActivityService;
+import com.emrys.lotterysystem.service.convert.ServiceConverter;
+import com.emrys.lotterysystem.service.dto.ShowWinningRecordsDTO;
 import com.emrys.lotterysystem.service.status.ActivityStatusManager;
 import com.emrys.lotterysystem.service.dto.ConvertActivityStatusDTO;
 import com.emrys.lotterysystem.service.enums.ActivityPrizeStatusEnum;
 import com.emrys.lotterysystem.service.enums.ActivityStatusEnum;
 import com.emrys.lotterysystem.service.enums.ActivityUserStatusEnum;
 import com.emrys.lotterysystem.service.constants.MQConstant;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -65,19 +69,41 @@ public class DrawPrizeServiceImpl implements DrawPrizeService {
     ObjectMapper objectMapper;
 
     /**
-     * 抽奖,发送到消息队列
-     * @param param
+     * 抽奖：入口校验 + 防重复锁，通过后发送到消息队列。
      */
     @Override
-    public void drowPrize(DrawPrizeParam param) {
-        log.info("drowPrize param:{}",param);
-        //发送到消息队列
-        Map<String,Object> map = new HashMap<>();
-        map.put(MQConstant.MESSAGE_ID , UUID.randomUUID().toString());
-        map.put(MQConstant.MESSAGE_DATA,param);
-        // 发到那个交换机?发到那个队列?如果已经绑定那他们之间的key是什么?
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME,ROUTING,map);
-        log.info("drowPrize send to rabbitmq success, param:{}",param);
+    public void drawPrize(DrawPrizeParam param) {
+        log.info("drawPrize param:{}", param);
+        String lockKey = acquireDrawPrizeLock(param);
+        try {
+            Map<String, Object> map = new HashMap<>();
+            map.put(MQConstant.MESSAGE_ID, UUID.randomUUID().toString());
+            map.put(MQConstant.MESSAGE_DATA, param);
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, ROUTING, map);
+            log.info("drawPrize send to rabbitmq success, param:{}", param);
+        } catch (Exception e) {
+            redis.delete(lockKey);
+            throw e;
+        }
+    }
+
+    /**
+     * 入队前校验：奖品未抽取 + Redis 防重复提交锁。
+     */
+    private String acquireDrawPrizeLock(DrawPrizeParam param) {
+        ActivityPrizeDO activityPrizeDO = activityPrizeMapper.selectByActivityIdAndPrizeId(
+                param.getActivityId(), param.getPrizeId());
+        if (activityPrizeDO == null) {
+            throw new ServiceException(ServiceErrorCodeConstants.ACTIVITY_PRIZE_NOT_EXIST);
+        }
+        if (!ActivityPrizeStatusEnum.NOT_DRAW.name().equals(activityPrizeDO.getStatus())) {
+            throw new ServiceException(ServiceErrorCodeConstants.ACTIVITY_PRIZE_ALREADY_DRAW);
+        }
+        String lockKey = DRAW_PRIZE_LOCK_ + param.getActivityId() + "_" + param.getPrizeId();
+        if (!redis.setIfAbsent(lockKey, "1", DRAW_PRIZE_LOCK_TIMEOUT)) {
+            throw new ServiceException(ServiceErrorCodeConstants.DRAW_PRIZE_DUPLICATE);
+        }
+        return lockKey;
     }
 
     /**
@@ -86,8 +112,8 @@ public class DrawPrizeServiceImpl implements DrawPrizeService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public List<WinningRecordDO> processDrawPrize(DrawPrizeParam param) {
-        checkDrowPrizeParam(param);
-        statusConvert(param);
+        checkDrowPrizeParam(param); //校验参数
+        statusConvert(param);    //状态转换
         return saveWinnerRecords(param);
     }
 
@@ -122,7 +148,12 @@ public class DrawPrizeServiceImpl implements DrawPrizeService {
             log.error("刷新缓存失败，已回滚本次写入的缓存, activityId:{}", activityId, e);
         }
     }
-
+/**
+ * 对List<WinningRecordDO> winningRecordList缓存
+ * @param key
+ * @param winningRecordList
+ * @param timeout
+ */
     private void cacheWinnerRecordStrict(String key, List<WinningRecordDO> winningRecordList, Long timeout) {
         try {
             String value = objectMapper.writeValueAsString(winningRecordList);
@@ -136,7 +167,10 @@ public class DrawPrizeServiceImpl implements DrawPrizeService {
             throw new ServiceException(ServiceErrorCodeConstants.WINNING_RECORD_CACHE_ERROR);
         }
     }
-
+/**
+ * 回滚缓存
+ * @param keys
+ */
     private void rollbackCacheKeys(List<String> keys) {
         if (keys.isEmpty()) {
             return;
@@ -290,50 +324,9 @@ public class DrawPrizeServiceImpl implements DrawPrizeService {
         }
     }
 
-    /**
-     * 查询活动维度中奖记录（Cache-Aside）。
-     * 先查 Redis，未命中则回源数据库；仅当活动全部奖品抽取完毕时才回填活动维度缓存。
-     *
-     * @param activityId 活动id
-     * @return 该活动下所有中奖记录，无记录时返回空列表
-     */
-    @Override
-    public List<WinningRecordDO> findWinningRecordsByActivityId(Long activityId) {
-        String key = WINNING_ACTIVITY_RECORD_ + activityId;
-        // 1. 先从 Redis 读取
-        List<WinningRecordDO> records = getWinningRecordsFromCache(key);
-        if (records != null) {
-            return records;
-        }
-        // 2. 缓存未命中，从数据库加载
-        return loadWinningRecordsFromDbByActivityId(activityId);
-    }
 
     /**
-     * 查询奖品维度中奖记录（Cache-Aside）。
-     * 先查 Redis，未命中则回源数据库；该奖品已有中奖记录即可回填奖品维度缓存。
-     *
-     * @param activityId 活动id
-     * @param prizeId    奖品id
-     * @return 该活动下指定奖品的中奖记录，无记录时返回空列表
-     */
-    @Override
-    public List<WinningRecordDO> findWinningRecordsByActivityIdAndPrizeId(Long activityId, Long prizeId) {
-        String key = WINNING_ACTIVITY_PRIZE_RECORD_ + activityId + "_" + prizeId;
-        // 1. 先从 Redis 读取
-        List<WinningRecordDO> records = getWinningRecordsFromCache(key);
-        if (records != null) {
-            return records;
-        }
-        // 2. 缓存未命中，从数据库加载
-        return loadWinningRecordsFromDbByActivityIdAndPrizeId(activityId, prizeId);
-    }
-
-    /**
-     * 从 Redis 读取中奖记录并反序列化为列表。
-     *
-     * @param key Redis 缓存 key
-     * @return 命中返回记录列表；key 不存在或反序列化失败返回 null
+     * 从 Redis 读取中奖记录
      */
     @Override
     public List<WinningRecordDO> getWinningRecordsFromCache(String key) {
@@ -382,5 +375,51 @@ public class DrawPrizeServiceImpl implements DrawPrizeService {
             cacheWinnerRecord(WINNING_ACTIVITY_PRIZE_RECORD_ + activityId + "_" + prizeId, records, WINNING_TIMEOUT);
         }
         return records;
+    }
+
+    /**
+     * 展示中奖记录
+     * @param param
+     * @return
+     */
+    @Override
+    public List<ShowWinningRecordsDTO> showWinningRecords(ShowWinningRecordsParam param) {
+        //校验参数
+        if(param.getActivityId() == null){
+            log.error("活动id为空, param:{}", param);
+            throw new ServiceException(ServiceErrorCodeConstants.ACTIVITY_ID_EMPTY);
+        }
+        //查询返回
+        String key = "";
+        List<WinningRecordDO> records = null;
+        if (param.getPrizeId() == null){ //查询活动维度
+             key = WINNING_ACTIVITY_RECORD_ + param.getActivityId();
+            // 1. 先从 Redis 读取
+            records = getWinningRecordsFromCache(key);
+            if (records != null) {
+                return ServiceConverter.convertToShowWinningRecordsDTOList(records);
+            }
+            // 2. 缓存未命中，从数据库加载
+            records = loadWinningRecordsFromDbByActivityId(param.getActivityId());
+
+        }else{
+            //查询奖品维度下的中奖记录
+            //1.查缓存
+            key = WINNING_ACTIVITY_RECORD_ + param.getActivityId()+"_"+param.getPrizeId();
+            records = getWinningRecordsFromCache(key);
+            if (records != null) {
+                //在缓存中,返回
+                return ServiceConverter.convertToShowWinningRecordsDTOList(records);
+            }
+            //2.缓存查不到;->查数据库
+            records = loadWinningRecordsFromDbByActivityIdAndPrizeId(param.getActivityId(), param.getPrizeId());
+        }
+        //3.重进加入缓存
+        try {
+            redis.setIfAbsent(key, objectMapper.writeValueAsString(records), WINNING_TIMEOUT);
+        } catch (JsonProcessingException e) {
+            throw new ServiceException(ServiceErrorCodeConstants.WINNING_RECORD_CACHE_ERROR);
+        }
+        return ServiceConverter.convertToShowWinningRecordsDTOList(records);
     }
 }

@@ -3,10 +3,7 @@ package com.emrys.lotterysystem.service.convert;
 import com.emrys.lotterysystem.controller.param.ActivityPrizeParam;
 import com.emrys.lotterysystem.controller.param.ActivityUserParam;
 import com.emrys.lotterysystem.dao.dataobject.*;
-import com.emrys.lotterysystem.service.dto.ActivityDTO;
-import com.emrys.lotterysystem.service.dto.ActivityDetailDTO;
-import com.emrys.lotterysystem.service.dto.PrizeDTO;
-import com.emrys.lotterysystem.service.dto.UserDTO;
+import com.emrys.lotterysystem.service.dto.*;
 import com.emrys.lotterysystem.service.enums.ActivityPrizeStatusEnum;
 import com.emrys.lotterysystem.service.enums.ActivityStatusEnum;
 import com.emrys.lotterysystem.service.enums.ActivityUserStatusEnum;
@@ -193,6 +190,26 @@ public class ServiceConverter {
                     activityDTO.setDescription(activityDO.getDescription());
                     activityDTO.setStatus(ActivityStatusEnum.forName(activityDO.getStatus()));
                     return activityDTO;
+                }).toList();
+    }
+
+    /**
+     * 将 WinningRecordDO 列表转换为 ShowWinningRecordsDTO 列表
+     */
+    public static List<ShowWinningRecordsDTO> convertToShowWinningRecordsDTOList(List<WinningRecordDO> records) {
+        if(records == null){
+            return List.of();
+        }
+        return records.stream()
+                .filter(Objects::nonNull)
+                .map(record -> {
+                    ShowWinningRecordsDTO dto = new ShowWinningRecordsDTO();
+                    dto.setWinnerId(record.getWinnerId());
+                    dto.setWinnerName(record.getWinnerName());
+                    dto.setPrizeName(record.getPrizeName());
+                    dto.setPrizeTier(PrizeTierEnum.forName(record.getPrizeTier()));
+                    dto.setWinningTime(record.getWinningTime());
+                    return dto;
                 }).toList();
     }
 }

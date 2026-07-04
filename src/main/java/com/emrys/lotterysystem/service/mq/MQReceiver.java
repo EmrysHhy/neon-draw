@@ -41,13 +41,8 @@ import static com.emrys.lotterysystem.common.config.DirectRabbitConfig.QUEUE_NAM
 
 
 /**
-
  * 抽奖 MQ 消费者
-
- *
-
  * @author Emrys
-
  */
 
 @Slf4j

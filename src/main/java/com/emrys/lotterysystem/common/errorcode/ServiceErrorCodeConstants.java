@@ -41,7 +41,12 @@ public interface ServiceErrorCodeConstants {
     ErrorCode ACTIVITY_PRIZE_TIER_ERROR = new ErrorCode(503, "奖品等级错误");
     ErrorCode ACTIVITY_PRIZE_ALREADY_DRAW = new ErrorCode(504, "奖品已经被抽取");
     ErrorCode ACTIVITY_PRIZE_AMOUNT_EXCEED_WINNER = new ErrorCode(505, "奖品数量大于中奖人员数量");
-    ErrorCode WINNING_RECORD_CACHE_ERROR = new ErrorCode(506, "中奖记录缓存失败");
+
+    ErrorCode DRAW_PRIZE_DUPLICATE = new ErrorCode(507, "该奖品正在抽奖中，请勿重复提交");
     //图片错误码
     ErrorCode PICTURE_UPLOAD_FAILED = new ErrorCode(601, "图片上传失败");
+
+
+    //redis
+    ErrorCode WINNING_RECORD_CACHE_ERROR = new ErrorCode(506, "中奖记录缓存失败");
 }

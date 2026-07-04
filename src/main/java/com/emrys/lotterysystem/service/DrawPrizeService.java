@@ -1,8 +1,10 @@
 package com.emrys.lotterysystem.service;
 
 import com.emrys.lotterysystem.controller.param.DrawPrizeParam;
+import com.emrys.lotterysystem.controller.param.ShowWinningRecordsParam;
 import com.emrys.lotterysystem.dao.dataobject.WinningRecordDO;
 import com.emrys.lotterysystem.service.dto.ActivityDetailDTO;
+import com.emrys.lotterysystem.service.dto.ShowWinningRecordsDTO;
 
 import java.util.List;
 
@@ -18,7 +20,7 @@ public interface DrawPrizeService {
     /**
      * 发送抽奖请求到消息队列。
      */
-    void drowPrize(DrawPrizeParam param);
+    void drawPrize(DrawPrizeParam param);
 
     /**
      * MQ 消费端：校验、改状态、存中奖记录（同一事务，失败自动回滚 DB）。
@@ -50,15 +52,6 @@ public interface DrawPrizeService {
      */
     void cacheWinnerRecord(String key, List<WinningRecordDO> winningRecordList, Long timeout);
 
-    /**
-     * 查询中奖记录（活动维度）：先查 Redis，未命中则查库并回填缓存。
-     */
-    List<WinningRecordDO> findWinningRecordsByActivityId(Long activityId);
-
-    /**
-     * 查询中奖记录（奖品维度）：先查 Redis，未命中则查库并回填缓存。
-     */
-    List<WinningRecordDO> findWinningRecordsByActivityIdAndPrizeId(Long activityId, Long prizeId);
 
     /**
      * 从 Redis 读取中奖记录。
@@ -74,4 +67,11 @@ public interface DrawPrizeService {
      * 从数据库加载中奖记录（奖品维度），并写入缓存。
      */
     List<WinningRecordDO> loadWinningRecordsFromDbByActivityIdAndPrizeId(Long activityId, Long prizeId);
+
+    /**
+     * 展示中奖列表
+     * @param showWinningRecordsParam
+     * @return
+     */
+    List<ShowWinningRecordsDTO> showWinningRecords(ShowWinningRecordsParam showWinningRecordsParam);
 }
