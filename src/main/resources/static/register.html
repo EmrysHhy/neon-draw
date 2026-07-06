@@ -10,42 +10,17 @@
     <script src="https://cdn.bootcdn.net/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #fff;
-            margin: 0;
-            padding: 0;
-        }
-
-        .register-container {
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 5px;
-        }
-
-        .register-container h2 {
-            font-weight: 600;
-            font-size: 32px;
-            letter-spacing: 1px;
-            color: #000000;
-            line-height: 50px;
-            text-align: center;
-            margin-bottom: 60px;
-        }
-
         .show-password {
             float: right;
             cursor: pointer;
-            color: #008CBA;
+            color: var(--neon-cyan);
         }
     </style>
 </head>
 
-<body>
-    <div class="register-container">
-        <h2>填写注册信息</h2>
+<body class="cyber-page">
+    <div class="cyber-panel cyber-panel-sm register-container">
+        <h2 class="cyber-form-title">填写注册信息</h2>
         <form id="registerForm">
             <div class="form-group">
                 <label for="name">姓名</label>
@@ -69,16 +44,17 @@
     </div>
 
     <script>
-        var params = new URLSearchParams(window.location.search); //从url中?获取参数
+        if (window.self === window.top) {
+            document.body.classList.add('cyber-body-bg');
+        }
+
+        var params = new URLSearchParams(window.location.search);
         var admin = params.get('admin');
         var jumpList = params.get('jumpList');
-        // 判断是否隐藏密码输入框
         if (admin === 'false') {
-            // 隐藏密码输入框
             $('#password').closest('div.form-group').css('display', 'none');
         }
 
-        // 使用jQuery Validate插件来验证表单
         $("#registerForm").validate({
             rules: {
                 name: "required",
@@ -110,7 +86,6 @@
                     identity: (admin == null || admin === 'true') ? "ADMIN" : "NORMAL"
                 };
 
-                // 表单验证通过后，发送AJAX请求
                 $.ajax({
                     url: '/user/register',
                     type: 'post',
@@ -121,7 +96,6 @@
                             alert("注册失败！" + result.message);
                         } else {
                             if (jumpList == "true") {
-                                //给父页面发送消息,admin.html就会监听到这个消息
                                 window.parent.postMessage({
                                     from: 'user-list.html',
                                     id: '#userList'
@@ -133,7 +107,7 @@
                         }
                     }
                 });
-                return false; // 阻止表单的默认提交行为
+                return false;
             }
         });
     </script>

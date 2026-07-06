@@ -1,6 +1,4 @@
 .login-page{
-  background: linear-gradient(rgba(10, 10, 26, 0.72), rgba(10, 10, 26, 0.72)), url('../pic/login.png') center center / cover fixed no-repeat;
-  background-color: #0a0a1a;
   display: flex;
   align-items: center;
   overflow-y: auto;
@@ -10,124 +8,237 @@
   margin: 0 auto;
   border-radius: 22px;
   overflow: hidden;
-  background-color: var(--white-color);
+  background: var(--bg-panel);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-cyber);
+  box-shadow: var(--shadow-card);
   max-width: 60%;
   width: 100%;
-  align-items: center;
+  align-items: stretch;
 }
 .login-page .img-box{
-  background-color:var(--baby-blue) ;
-  padding: 102px 56px;
+  background: rgba(0, 245, 255, 0.04);
+  padding: 72px 56px;
   box-sizing: border-box;
+  border-right: 1px solid rgba(0, 245, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.login-page .img-box img {
+  opacity: 0.85;
 }
 .login-page .login-container{
-  padding: 0 24px;
-  height: 100%;
+  padding: 72px 40px 40px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100%;
 }
-.login-page h2{
-  font-family: PingFangSC, PingFang SC;
-  font-weight: 600;
-  color: #000000;
-  text-align: left;
-  font-style: normal;
-  margin-bottom: 40px;
-  font-size: 32px;
+.login-page #loginForm,
+.login-page #codeForm {
+  min-height: 310px;
+  box-sizing: border-box;
 }
-.login-page .login-btn{
+.login-page .login-btn {
   margin-bottom: 20px;
-  margin-top: 50px;
+  margin-top: 40px;
+  height: 48px;
+  font-size: 16px;
+  letter-spacing: 1px;
 }
 .login-page .register-link{
   text-align: center;
-  font-family: PingFangSC, PingFang SC;
   font-weight: 400;
   font-size: 16px;
-  color: #999999;
+  color: var(--text-muted);
   line-height: 22px;
+}
+.login-page .register-link a {
+  color: var(--neon-cyan);
 }
 .tab-box{
   display: flex;
   align-items: center;
-  margin-bottom: 30px;
+  margin-bottom: 32px;
+  min-height: 36px;
 }
 .tab-box span{
-  font-weight: 400;
+  font-weight: 500;
   font-size: 18px;
-  color: #000000;
+  color: var(--text-secondary);
   margin-right:20px ;
   cursor: pointer;
+  transition: color 0.2s;
 }
 .tab-box span.active{
   position: relative;
-  color: var(--blue-color);
+  color: var(--neon-cyan);
+  text-shadow: 0 0 8px rgba(0, 245, 255, 0.4);
 }
 .tab-box span.active::after{
   position: absolute;
   content: '';
   width: 30px;
   height: 2px;
-  background-color: var(--blue-color);
+  background-color: var(--neon-cyan);
+  box-shadow: var(--shadow-neon);
   border-radius: 5px;
   bottom: -12px;
   left: 50%;
   transform: translate(-50%);
 }
+
+/* 密码登录 / 验证码登录 — 表单与输入框统一 */
+.login-page .form-group {
+  margin-bottom: 24px;
+}
+
+.login-page .form-group label {
+  color: rgba(255, 255, 255, 0.88);
+  font-weight: 500;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.login-page .form-group label.error {
+  color: var(--red-color);
+}
+
+.login-page .form-control,
+.login-page input.form-control[type="text"],
+.login-page input.form-control[type="password"],
+.login-page input.form-control[type="email"],
+.login-page input.form-control[type="tel"] {
+  background-color: var(--bg-input) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid rgba(0, 245, 255, 0.28);
+  height: 48px;
+  line-height: 48px;
+  font-size: 14px;
+  border-radius: var(--border-radius);
+  box-shadow: none;
+  width: 100%;
+}
+
+.login-page .form-control:focus,
+.login-page input.form-control[type="text"]:focus,
+.login-page input.form-control[type="password"]:focus,
+.login-page input.form-control[type="email"]:focus {
+  background-color: var(--bg-input) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 0 2px rgba(0, 245, 255, 0.15), var(--shadow-neon);
+}
+
+.login-page .form-control::placeholder {
+  color: var(--placeholder-color) !important;
+}
+
+.login-page input.form-control:-webkit-autofill,
+.login-page input.form-control:-webkit-autofill:hover,
+.login-page input.form-control:-webkit-autofill:focus,
+.login-page input.form-control:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--text-primary) !important;
+  caret-color: var(--text-primary);
+  box-shadow: 0 0 0 1000px var(--bg-input) inset !important;
+  border: 1px solid rgba(0, 245, 255, 0.28) !important;
+  transition: background-color 9999s ease-out 0s;
+}
+
+.login-page .form-control.error,
+.login-page input.form-control.error {
+  border-color: var(--red-color);
+}
+
 .code-box{
   display: flex;
   align-items: center;
   justify-content: space-between;
   position: relative;
+  gap: 10px;
+  min-height: 48px;
 }
 .code-box .form-control{
-  width: calc(100% - 140px);
+  flex: 1;
+  width: auto;
+  min-width: 0;
+  height: 48px;
+  line-height: 48px;
 }
 .code-box .btn-primary{
+  flex-shrink: 0;
   width: 126px;
-  height: 47px;
-  margin-left: 10px;
+  height: 48px;
+  margin-left: 0;
   box-sizing: border-box;
-  font-size: 15px;
+  font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0 8px;
+  white-space: nowrap;
+  background: rgba(0, 245, 255, 0.08);
+  border: 1px solid var(--neon-cyan);
+  color: var(--neon-cyan);
+  box-shadow: none;
+}
+.code-box .btn-primary:hover,
+.code-box .btn-primary:focus {
+  background: rgba(0, 245, 255, 0.18);
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  box-shadow: var(--shadow-neon);
 }
 @media screen and (min-width: 1200px) { 
   .login-page .login-btn{
-    margin-top: 50px;
+    margin-top: 40px;
   }
 }
 @media screen and (max-width: 1110px) { 
-  .login-page h2{
-    margin-bottom: 30px;
-    font-size: 26px;
-  }
   .login-page .login-btn{
-    margin-top: 30px;
+    margin-top: 32px;
   }
 }
 @media screen and (max-width: 990px) { 
-  .form-group{
+  .login-page .form-group {
     margin-bottom: 15px;
   }
-  .form-control{
+  .login-page .form-control,
+  .login-page input.form-control[type="text"],
+  .login-page input.form-control[type="password"],
+  .login-page input.form-control[type="email"],
+  .code-box .form-control {
     height: 32px;
     line-height: 32px;
   }
-  .login-page h2{
-    font-size: 20px;
+  .code-box {
+    min-height: 32px;
+  }
+  .code-box .btn-primary {
+    height: 32px;
+    width: 110px;
+    font-size: 13px;
+  }
+  .login-page .login-btn {
+    height: 32px;
+    font-size: 14px;
+  }
+  .login-page #loginForm,
+  .login-page #codeForm {
+    min-height: 260px;
   }
 }
 @media screen and (max-width: 900px) { 
   .login-page .login-container{
-    padding: 30px 24px;
+    padding: 40px 24px 32px;
     width: 100%;
     max-width: initial;
     flex: 0 0 100%;
   }
   .login-page .img-box{
     display: none;
-  }
-  .login-page h2{
-    font-size: 22px;
   }
 }
