@@ -210,8 +210,7 @@ public class ControllerConverter {
     }
 
     /**
-     * ' 将 ShowWinningRecordsDTO 列表转换为 ShowWinningResult 列表
-     * @return
+     * 将 ShowWinningRecordsDTO 列表转换为 ShowWinningResult 列表（按等级升序，同等级按中奖时间）
      */
     public static List<ShowWinningResult> convertToShowWinningResultList(List<ShowWinningRecordsDTO> showWinningRecordsDTO) {
         if (showWinningRecordsDTO == null) {
@@ -220,15 +219,23 @@ public class ControllerConverter {
         return showWinningRecordsDTO
                 .stream()
                 .filter(Objects::nonNull)
+                .sorted(Comparator
+                        .comparingInt((ShowWinningRecordsDTO dto) -> tierSortCode(dto.getPrizeTier()))
+                        .thenComparing(ShowWinningRecordsDTO::getWinningTime, Comparator.nullsLast(Comparator.naturalOrder())))
                 .map(dto -> {
             ShowWinningResult result = new ShowWinningResult();
             result.setWinnerId(dto.getWinnerId());
             result.setWinnerName(dto.getWinnerName());
             result.setPrizeName(dto.getPrizeName());
-            result.setPrizeTier(dto.getPrizeTier() != null ? dto.getPrizeTier().name() : null);
+            PrizeTierEnum tier = dto.getPrizeTier();
+            result.setPrizeTier(tier != null ? tier.getMessage() : null);
             result.setWinningTime(dto.getWinningTime());
             return result;
         }).toList();
 
+    }
+
+    private static int tierSortCode(PrizeTierEnum tier) {
+        return tier != null ? tier.sortCode() : Integer.MAX_VALUE;
     }
 }

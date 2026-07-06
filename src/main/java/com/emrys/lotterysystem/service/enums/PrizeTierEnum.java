@@ -12,14 +12,17 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum PrizeTierEnum {
 
-    //未中奖
+    SPECIAL_PRIZE(0,"特等奖"),
     FIRST_PRIZE(1,"一等奖"),
-    //已中奖
     SECOND_PRIZE(2,"二等奖"),
-    THIRD_PRIZE(3,"三等奖"),
-    SPECIAL_PRIZE(4,"特等奖");
+    THIRD_PRIZE(3,"三等奖");
     private final Integer code;
     private final String message;
+
+    /** 排序权重，数值越小越靠前（特等奖、一等奖、二等奖…） */
+    public int sortCode() {
+        return code != null ? code : Integer.MAX_VALUE;
+    }
 
     /**
      * 根基传入的String返回对应的枚举类型

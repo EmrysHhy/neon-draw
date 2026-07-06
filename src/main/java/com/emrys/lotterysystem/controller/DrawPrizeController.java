@@ -27,10 +27,10 @@ import java.util.List;
 public class DrawPrizeController {
     @Autowired
     DrawPrizeService drowPrizeService;
-    @RequestMapping("/drow-prize")
-    public CommonResult<Boolean> drowPrize(@RequestBody @Validated DrawPrizeParam drowPrizeParam) {
-        log.info("drowPrizeParam: {}", drowPrizeParam);
-        drowPrizeService.drawPrize(drowPrizeParam);
+    @RequestMapping("/draw-prize")
+    public CommonResult<Boolean> drawPrize(@RequestBody @Validated DrawPrizeParam drawPrizeParam) {
+        log.info("drawPrizeParam: {}", drawPrizeParam);
+        drowPrizeService.drawPrize(drawPrizeParam);
         return CommonResult.success(true);
     }
 

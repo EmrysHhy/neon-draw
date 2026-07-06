@@ -108,7 +108,7 @@
               }else{
                   // 登录成功，跳转到首页   本地存储token
                   localStorage.setItem('user_token', result.data.token);
-                   localStorage.setItem('user_identity', result.data.indentity);
+                   localStorage.setItem('user_identity', result.data.identity);
                    location.assign("admin.html");
               }
           },
@@ -195,7 +195,7 @@
               }else{
                   // 登录成功，跳转到首页   本地存储token
                   localStorage.setItem('user_token', result.data.token);
-                   localStorage.setItem('user_identity', result.data.indentity);
+                   localStorage.setItem('user_identity', result.data.identity);
                    location.assign("admin.html");
               }
                 },

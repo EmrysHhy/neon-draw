@@ -10,10 +10,13 @@
     .admin-page{
       display: flex;
       flex-direction: column;
+      min-height: 100vh;
+      background: linear-gradient(rgba(10, 10, 26, 0.72), rgba(10, 10, 26, 0.72)), url('./pic/login.png') center center / cover fixed no-repeat;
+      background-color: #0a0a1a;
     }
     .admin-page .header-box{
       height: 80px;
-      background-color: #fff;
+      background-color: transparent;
       width: 100%;
       display: flex;
       align-items: center;
@@ -36,7 +39,7 @@
     .header-box .black{
       font-weight: 500;
       font-size: 14px;
-      color: #222222;
+      color: #ffffff;
       padding-right: 20px;
       position: relative;
     }
@@ -74,13 +77,13 @@
       width: 220px;
       overflow-x: hidden;
       height: calc(100vh - 80px);
-      background-color: #fff;
+      background-color: transparent;
       padding:  24px 10px;
       position: relative; /* 添加相对定位，为activity-center-title的绝对定位提供参考 */
     }
     .admin-page .main-content {
       flex: 1;
-      background-color: #fff;
+      background-color: transparent;
     }
     .admin-page .nav-link {
       display: flex;
@@ -93,7 +96,7 @@
       align-items: center;
       font-weight: 400;
       font-size: 16px;
-      color: var(--gray-color);
+      color: rgba(255, 255, 255, 0.75);
     }
     .admin-page .nav-link img{
       margin-right: 15px;
@@ -121,15 +124,15 @@
     }
     .sub-category .nav-link{
       width: 194px;
-      background-color: #fff;
+      background-color: transparent;
       padding-left: 43px;
-      color: var(--placeholder-color);
+      color: rgba(255, 255, 255, 0.55);
     }
     .sub-category .nav-link.active,.sub-category .nav-link:hover {
       width: 198px;
-      background: #DCE8FF;
+      background: rgba(220, 232, 255, 0.25);
       border-radius: 10px;
-      color: var(--blue-color);
+      color: #C6DDFF;
     }
     .sub-category {
       margin-left: 20px;
@@ -139,7 +142,7 @@
       width: 100%;
       height: calc(100vh - 80px);
       box-sizing: border-box;
-      background-color: var(--bg-color);
+      background-color: transparent;
       border: none;
     }
   </style>
@@ -208,7 +211,9 @@
 <!-- 引入jQuery和Bootstrap的JavaScript -->
 <script
         src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="./js/auth.js"></script>
 <script>
+  syncUserIdentity();
   // 监听子message事件,实现子页面向父页面传递
   window.addEventListener('message', function(e){
     console.log('子页面传递的数据', e.data)
@@ -258,8 +263,9 @@
 
   // 退出登录
   function logout(){
-    localStorage.removeItem("user_token")
-    location.href='/blogin.html'
+    localStorage.removeItem("user_token");
+    localStorage.removeItem("user_identity");
+    location.href='/blogin.html';
   }
 </script>
 </body>

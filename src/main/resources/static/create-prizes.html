@@ -147,18 +147,31 @@
 <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
     var userToken = localStorage.getItem("user_token");
+    var selectedFile = null;
 
-    var formData = new FormData();
+    function resetForm() {
+        $('#prizeName').val('');
+        $('#description').val('');
+        $('#price').val('');
+        $('#prizeImageUrl').val('');
+        $('#previewImg').hide().attr('src', './pic/bg.png');
+        selectedFile = null;
+    }
+
     // 提交奖品数据的函数
     function submitPrizes() {
         var prizeName = $('#prizeName').val();
         var description = $('#description').val();
         var price = $('#price').val();
+        var formData = new FormData();
         formData.append("param", JSON.stringify({
-            prizeName:prizeName,
-            description:description,
-            price:price,
+            prizeName: prizeName,
+            description: description,
+            price: price,
         }));
+        if (selectedFile) {
+            formData.append("prizePic", selectedFile);
+        }
         // 发送POST请求到后端接口
         $.ajax({
             url: 'prize/create',
@@ -175,8 +188,9 @@
             success: function(result) {
                 if(result.code == 200) {
                     alert('奖品创建成功！');
+                    resetForm();
                 } else {
-                    alert('创建奖品失败：' + result.msg);
+                    alert('创建奖品失败：' + result.message);
                 }
             },
             error:function(err){
@@ -192,8 +206,11 @@
     }
     // 上传图片：读取用户通过文件输入选择的图片文件，并将其显示在一个网页元素中
     function showImg(){
-        var file =  document.getElementById("prizeImageUrl").files[0];
-        formData.append("prizePic",file);
+        var file = document.getElementById("prizeImageUrl").files[0];
+        if (!file) {
+            return;
+        }
+        selectedFile = file;
         var r= new FileReader();
         result = r.readAsDataURL(file);
         r.onload=function (e) {

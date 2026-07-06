@@ -16,7 +16,8 @@ public class InfoLevelFilter extends Filter<ILoggingEvent> {
 
     @Override
     public FilterReply decide(ILoggingEvent iLoggingEvent) {
-        if (iLoggingEvent.getLevel().toInt() == Level.INFO.toInt()){
+        int level = iLoggingEvent.getLevel().toInt();
+        if (level == Level.INFO.toInt() || level == Level.WARN.toInt()){
             return FilterReply.ACCEPT;
         }
         return FilterReply.DENY;

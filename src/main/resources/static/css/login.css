@@ -1,5 +1,6 @@
 .login-page{
-  background-color: var(--blue-color);
+  background: linear-gradient(rgba(10, 10, 26, 0.72), rgba(10, 10, 26, 0.72)), url('../pic/login.png') center center / cover fixed no-repeat;
+  background-color: #0a0a1a;
   display: flex;
   align-items: center;
   overflow-y: auto;

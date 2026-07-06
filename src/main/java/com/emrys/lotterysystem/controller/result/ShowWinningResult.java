@@ -15,9 +15,10 @@ import java.util.Date;
 public class ShowWinningResult implements Serializable {
     private Long winnerId;
     private String winnerName;
-    private String PrizeName;
-    private String PrizeTier;
-
+    private String prizeName;
+    /** 等级中文描述，如 一等奖 */
+    private String prizeTier;
+    
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date winningTime;
 }

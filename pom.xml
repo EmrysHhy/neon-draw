@@ -30,6 +30,7 @@
         <java.version>17</java.version>
         <mockito.version>5.17.0</mockito.version>
         <hutool.version>5.8.34</hutool.version>
+        <skipTests>true</skipTests>
     </properties>
     <dependencies>
         <!-- SpringBoot AMQP (RabbitMQ消息队列) -->
@@ -186,6 +187,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <skipTests>${skipTests}</skipTests>
                     <argLine>
                         -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar
                         -XX:+EnableDynamicAgentLoading

@@ -3,217 +3,982 @@
 <head>
     <meta charset="utf-8">
     <title>抽奖页面</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style type="text/css">
-        * {
-            margin: 0;
-            padding: 0;
+        :root {
+            --neon-cyan: #00f5ff;
+            --neon-pink: #ff00ff;
+            --neon-yellow: #ffff00;
+            --neon-purple: #bf00ff;
+            --neon-green: #39ff14;
+            --bg-dark: #0a0a1a;
+            --bg-panel: rgba(10, 10, 26, 0.85);
+            --bg-card: rgba(20, 20, 40, 0.9);
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --text-muted: rgba(176, 176, 176, 0.7);
+            --shadow-neon: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan), 0 0 40px var(--neon-cyan);
+            --shadow-neon-pink: 0 0 10px var(--neon-pink), 0 0 20px var(--neon-pink), 0 0 40px var(--neon-pink);
+            --shadow-neon-yellow: 0 0 10px var(--neon-yellow), 0 0 20px var(--neon-yellow), 0 0 40px var(--neon-yellow);
+            --shadow-card: 0 8px 32px rgba(0, 245, 255, 0.15);
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            --fs-title: 52px;
+            --fs-disc: 26px;
+            --fs-draw-name: 34px;
+            --fs-btn: 16px;
+            --fs-tier-special: 30px;
+            --fs-tier-first: 26px;
+            --fs-tier-second: 23px;
+            --fs-tier-third: 20px;
+            --fs-tier-default: 18px;
+            --fs-winner-special: 16px;
+            --fs-winner-first: 15px;
+            --fs-winner-second: 14px;
+            --fs-winner-third: 13px;
+            --fs-winner-default: 12px;
+            --fs-time-special: 20px;
+            --fs-time-first: 18px;
+            --fs-time-second: 17px;
+            --fs-time-third: 16px;
+            --fs-time-default: 15px;
         }
-        html, body {
-            width: 100%;
-            height: 100%;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; }
         body {
             text-align: center;
-            background: url("./pic/bg.png") no-repeat;
+            background: linear-gradient(rgba(10, 10, 26, 0.72), rgba(10, 10, 26, 0.72)), url('/pic/bg.png') center center / cover fixed no-repeat;
+            background-color: #0a0a1a;
             overflow: hidden;
-            background-size: 100% 100%;
-            font-weight: bold;
-            color: #D40000;
+            font-family: 'Rajdhani', "PingFang SC", "Microsoft YaHei", sans-serif;
+            font-weight: 500;
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+            position: relative;
         }
+        
+        /* 网格线背景 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 245, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 245, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        /* 扫描线效果 */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15),
+                rgba(0, 0, 0, 0.15) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 1000;
+            animation: scanlines 0.5s linear infinite;
+        }
+        
+        @keyframes scanlines {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(4px); }
+        }
+        
+        /* 浮动粒子 */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--neon-cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 6px var(--neon-cyan), 0 0 12px var(--neon-cyan);
+            animation: float 15s infinite linear;
+        }
+        
+        .particle:nth-child(odd) {
+            background: var(--neon-pink);
+            box-shadow: 0 0 6px var(--neon-pink), 0 0 12px var(--neon-pink);
+            animation-duration: 20s;
+        }
+        
+        .particle:nth-child(3n) {
+            background: var(--neon-yellow);
+            box-shadow: 0 0 6px var(--neon-yellow), 0 0 12px var(--neon-yellow);
+            animation-duration: 25s;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* ── 布局骨架 ── */
         #container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             min-width: 1000px;
-            min-height: 700px;
+            min-height: 100vh;
+            padding: 0 32px 28px;
+            position: relative;
+            z-index: 1;
+        }
+        .page-header {
+            width: 100%;
+            max-width: 960px;
+            padding-top: 40px;
+            flex-shrink: 0;
+        }
+        .title-wrap {
+            position: relative;
+            display: inline-block;
+            max-width: 100%;
+            padding: 0 48px;
+        }
+        .title-wrap::before,
+        .title-wrap::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 36px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-cyan));
+            transform: translateY(-50%);
+            box-shadow: 0 0 6px var(--neon-cyan);
+        }
+        .title-wrap::before { left: 0; }
+        .title-wrap::after {
+            right: 0;
+            background: linear-gradient(90deg, var(--neon-cyan), transparent);
         }
         #title {
-            font-size: 100px;
-            margin-top: 80px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: var(--fs-title);
+            font-weight: 900;
+            line-height: 1.25;
+            letter-spacing: 1px;
+            color: var(--neon-cyan);
+            -webkit-text-stroke: 1px rgba(0, 245, 255, 0.45);
+            text-shadow: 0 0 2px rgba(0, 245, 255, 0.2);
+            animation: titleGlow 3.5s ease-in-out infinite alternate;
         }
+        
+        @keyframes titleGlow {
+            from {
+                text-shadow: 0 0 2px rgba(0, 245, 255, 0.18);
+            }
+            to {
+                text-shadow: 0 0 4px rgba(0, 245, 255, 0.3);
+            }
+        }
+        
         #disc {
-            font-size: 40px;
-            margin: 10px 0;
-        }
-        #image {
             margin-top: 20px;
-            max-height: 280px;
-            border: 1px solid #E23540FF;
-            border-radius: 20px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px 14px;
         }
-        #list {
-            margin: 0 auto;
-            max-width: 800px;
-        }
-        #list span {
+        .disc-tier {
             display: inline-block;
-            width: 160px;
-            font-size: 36px;
-            margin-top: 8px;
+            padding: 4px 18px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: calc(var(--fs-disc) * 0.85);
+            font-weight: 700;
+            color: var(--bg-dark);
+            background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-pink) 100%);
+            border-radius: 999px;
+            letter-spacing: 2px;
+            box-shadow: 
+                0 0 8px var(--neon-cyan),
+                0 0 15px var(--neon-pink);
+            animation: tierGlow 1.5s ease-in-out infinite alternate;
         }
-        .records-item {
-            text-align: center;
-            cursor: pointer;
-            padding: 20px;
-            transition: background-color 0.3s;
-            font-size: 20px;
+        
+        @keyframes tierGlow {
+            from {
+                box-shadow: 
+                    0 0 8px var(--neon-cyan),
+                    0 0 20px var(--neon-pink);
+            }
+            to {
+                box-shadow: 
+                    0 0 15px var(--neon-cyan),
+                    0 0 25px var(--neon-pink),
+                    0 0 35px var(--neon-cyan);
+            }
         }
-        .opt-box{
+        
+        .disc-name {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: var(--fs-disc);
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        .disc-count {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: calc(var(--fs-disc) * 0.78);
+            font-weight: 600;
+            color: var(--neon-yellow);
+            padding: 3px 14px;
+            border: 1.5px solid var(--neon-yellow);
+            border-radius: 999px;
+            background: rgba(255, 255, 0, 0.1);
+            box-shadow: 0 0 6px rgba(255, 255, 0, 0.3);
+        }
+        .disc-subtitle {
+            font-family: 'Orbitron', sans-serif;
+            font-size: calc(var(--fs-disc) * 1.1);
+            font-weight: 700;
+            color: var(--neon-pink);
+            letter-spacing: 6px;
+            text-shadow: 
+                0 0 2px rgba(255, 0, 255, 0.9),
+                0 0 6px rgba(255, 0, 255, 0.35);
+        }
+
+        /* ── 主舞台 ── */
+        .stage {
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 960px;
+            min-height: 0;
+            padding: 8px 0;
+        }
+        .prize-frame {
+            display: none;
+            position: relative;
+            padding: 14px;
+            background: var(--bg-panel);
+            border-radius: var(--radius-lg);
+            box-shadow: 
+                var(--shadow-card),
+                inset 0 0 0 1px rgba(0, 245, 255, 0.2);
+            border: 1px solid rgba(0, 245, 255, 0.15);
+            backdrop-filter: blur(10px);
+        }
+        .prize-frame::before {
+            content: '';
+            position: absolute;
+            inset: 6px;
+            border: 1.5px dashed rgba(0, 245, 255, 0.2);
+            border-radius: calc(var(--radius-lg) - 6px);
+            pointer-events: none;
+            animation: borderPulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes borderPulse {
+            0%, 100% { border-color: rgba(0, 245, 255, 0.15); }
+            50% { border-color: rgba(0, 245, 255, 0.35); }
+        }
+        
+        #image {
+            display: block;
+            max-height: 260px;
+            max-width: min(420px, 80vw);
+            border-radius: calc(var(--radius-lg) - 8px);
+            object-fit: contain;
+            filter: drop-shadow(0 0 15px rgba(0, 245, 255, 0.2));
+        }
+
+        /* ── 滚动抽奖格 ── */
+        #list.draw-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+            gap: 16px 20px;
+            width: 100%;
+            padding: 12px 0;
+        }
+        .draw-slot {
+            width: 200px;
+            height: 72px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-top: 30px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: var(--fs-draw-name);
+            font-weight: 700;
+            color: var(--neon-cyan);
+            background: var(--bg-card);
+            border: 2px solid var(--neon-cyan);
+            border-radius: var(--radius-md);
+            box-shadow: 
+                0 0 8px rgba(0, 245, 255, 0.3),
+                inset 0 0 15px rgba(0, 245, 255, 0.1);
+            letter-spacing: 2px;
+            animation: slotPulse 0.6s ease-in-out infinite alternate;
+            text-shadow: 0 0 5px var(--neon-cyan);
         }
-        .opt-box .btn{
-            width: 120px;
-            height: 32px;
+        .draw-slot:nth-child(even) { 
+            animation-delay: 0.15s;
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+            box-shadow: 
+                0 0 8px rgba(255, 0, 255, 0.3),
+                inset 0 0 15px rgba(255, 0, 255, 0.1);
+            text-shadow: 0 0 5px var(--neon-pink);
+        }
+        .draw-slot:nth-child(3n) { 
+            animation-delay: 0.3s;
+            border-color: var(--neon-yellow);
+            color: var(--neon-yellow);
+            box-shadow: 
+                0 0 8px rgba(255, 255, 0, 0.3),
+                inset 0 0 15px rgba(255, 255, 0, 0.1);
+            text-shadow: 0 0 5px var(--neon-yellow);
+        }
+        @keyframes slotPulse {
+            from { 
+                transform: scale(1); 
+                box-shadow: 
+                    0 0 8px rgba(0, 245, 255, 0.3),
+                    inset 0 0 15px rgba(0, 245, 255, 0.1);
+            }
+            to   { 
+                transform: scale(1.03); 
+                box-shadow: 
+                    0 0 15px rgba(0, 245, 255, 0.5),
+                    0 0 30px rgba(0, 245, 255, 0.3),
+                    inset 0 0 25px rgba(0, 245, 255, 0.2);
+            }
+        }
+
+        /* ── 揭晓中奖者 ── */
+        #list.winner-grid {
             display: flex;
-            align-items: center;
+            flex-wrap: wrap;
             justify-content: center;
-            border: 2px solid #D40000;
-            margin-inline: 18px;
-            cursor: pointer;
+            gap: 18px 22px;
+            width: 100%;
+            padding: 16px 0;
+        }
+        .winner-chip {
+            position: relative;
+            min-width: 180px;
+            padding: 18px 28px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: var(--fs-draw-name);
+            font-weight: 700;
+            color: var(--neon-pink);
+            background: var(--bg-card);
+            border: 2px solid var(--neon-pink);
+            border-radius: var(--radius-md);
+            box-shadow: 
+                0 0 10px rgba(255, 0, 255, 0.3),
+                inset 0 0 15px rgba(255, 0, 255, 0.1);
+            letter-spacing: 3px;
+            animation: revealPop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+            text-shadow: 0 0 5px var(--neon-pink);
+        }
+        .winner-chip::after {
+            content: '★';
+            position: absolute;
+            top: -10px;
+            right: -6px;
+            font-size: 18px;
+            color: var(--neon-yellow);
+            text-shadow: 0 0 5px var(--neon-yellow);
+            animation: starPulse 1s ease-in-out infinite alternate;
+        }
+        
+        @keyframes starPulse {
+            from { 
+                transform: scale(1) rotate(0deg);
+                text-shadow: 0 0 5px var(--neon-yellow);
+            }
+            to { 
+                transform: scale(1.2) rotate(15deg);
+                text-shadow: 
+                    0 0 8px var(--neon-yellow),
+                    0 0 15px var(--neon-yellow);
+            }
+        }
+        
+        @keyframes revealPop {
+            from { 
+                opacity: 0; 
+                transform: scale(0.6) translateY(20px);
+                filter: blur(10px);
+            }
+            to   { 
+                opacity: 1; 
+                transform: scale(1) translateY(0);
+                filter: blur(0);
+            }
+        }
+
+        /* ── 中奖名单 ── */
+        #list.records-item {
+            width: 100%;
+            max-height: calc(100vh - 280px);
+            overflow-y: auto;
+            padding: 8px 4px 16px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 245, 255, 0.5) transparent;
+        }
+        #list.records-item::-webkit-scrollbar { width: 5px; }
+        #list.records-item::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--neon-cyan), var(--neon-pink));
             border-radius: 4px;
-            font-weight: normal;
-            font-size: 15px;
+            box-shadow: 0 0 6px var(--neon-cyan);
         }
-        .opt-box .btn:hover{
-            background-color: #D40000;
-            color: #fff;
+        .tier-section {
+            margin-bottom: 20px;
+            padding: 18px 22px 14px;
+            background: var(--bg-panel);
+            border-radius: var(--radius-md);
+            box-shadow: 
+                var(--shadow-card),
+                0 0 10px rgba(0, 245, 255, 0.2);
+            border-left: 5px solid var(--neon-cyan);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 245, 255, 0.2);
+            border-left: 5px solid var(--neon-cyan);
+        }
+        .tier-section.tier-special { 
+            border-left-color: var(--neon-yellow); 
+            background: linear-gradient(135deg, rgba(20, 20, 40, 0.95), rgba(30, 30, 50, 0.9));
+            box-shadow: 
+                0 0 15px rgba(255, 255, 0, 0.2),
+                inset 0 0 20px rgba(255, 255, 0, 0.1);
+        }
+        .tier-section.tier-first   { 
+            border-left-color: var(--neon-cyan);
+            box-shadow: 
+                0 0 10px rgba(0, 245, 255, 0.2),
+                inset 0 0 15px rgba(0, 245, 255, 0.1);
+        }
+        .tier-section.tier-second  { 
+            border-left-color: var(--neon-pink);
+            box-shadow: 
+                0 0 10px rgba(255, 0, 255, 0.2),
+                inset 0 0 15px rgba(255, 0, 255, 0.1);
+        }
+        .tier-section.tier-third   { 
+            border-left-color: var(--neon-purple);
+            box-shadow: 
+                0 0 10px rgba(191, 0, 255, 0.2),
+                inset 0 0 15px rgba(191, 0, 255, 0.1);
+        }
+        .tier-section .tier-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px 12px;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 245, 255, 0.2);
+        }
+        .tier-badge {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 5px var(--neon-cyan);
+        }
+        .tier-prize {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+        }
+        .tier-section.tier-special .tier-badge { 
+            color: var(--neon-yellow); 
+            text-shadow: 0 0 8px var(--neon-yellow);
+        }
+        .tier-section.tier-special .tier-header { font-size: var(--fs-tier-special); }
+        .tier-section.tier-first   .tier-header { font-size: var(--fs-tier-first); }
+        .tier-section.tier-second  .tier-header { font-size: var(--fs-tier-second); }
+        .tier-section.tier-third   .tier-header { font-size: var(--fs-tier-third); }
+        .tier-section.tier-default .tier-header { font-size: var(--fs-tier-default); }
+        .winner-line {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 6px 14px;
+            line-height: 1.6;
+            margin: 7px 0;
+            padding: 6px 0;
+        }
+        .winner-line + .winner-line {
+            border-top: 1px dashed rgba(0, 245, 255, 0.2);
+        }
+        .winner-label {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.05em;
+            font-weight: 500;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+        .tier-section.tier-special .winner-line { font-size: var(--fs-winner-special); }
+        .tier-section.tier-first   .winner-line { font-size: var(--fs-winner-first); }
+        .tier-section.tier-second  .winner-line { font-size: var(--fs-winner-second); }
+        .tier-section.tier-third   .winner-line { font-size: var(--fs-winner-third); }
+        .tier-section.tier-default .winner-line { font-size: var(--fs-winner-default); }
+        .winner-name {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.25em;
+            font-weight: 400;
+            color: var(--text-primary);
+            letter-spacing: 1px;
+            text-shadow: 0 0 3px rgba(255, 255, 255, 0.3);
+        }
+        .winner-time {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.82em;
+            font-weight: 700;
+            color: var(--neon-green);
+            letter-spacing: 1px;
+            padding: 2px 10px;
+            background: rgba(57, 255, 20, 0.1);
+            border: 1px solid rgba(57, 255, 20, 0.3);
+            border-radius: 6px;
+            text-shadow: 0 0 3px var(--neon-green);
+        }
+        .tier-section.tier-special .winner-time { font-size: var(--fs-time-special); }
+        .tier-section.tier-first   .winner-time { font-size: var(--fs-time-first); }
+        .tier-section.tier-second  .winner-time { font-size: var(--fs-time-second); }
+        .tier-section.tier-third   .winner-time { font-size: var(--fs-time-third); }
+        .tier-section.tier-default .winner-time { font-size: var(--fs-time-default); }
+
+        /* ── 按钮区 ── */
+        .opt-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 14px;
+            flex-shrink: 0;
+            padding-top: 4px;
+            margin-top: 10px;
+        }
+        .opt-box .btn {
+            min-width: 140px;
+            height: 44px;
+            padding: 0 22px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 999px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 600;
+            font-size: var(--fs-btn);
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            user-select: none;
+            position: relative;
+            overflow: hidden;
+        }
+        .opt-box .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        .opt-box .btn:hover::before {
+            left: 100%;
+        }
+        .opt-box .btn:active { transform: scale(0.97); }
+        .opt-box .btn.pre-btn {
+            color: var(--neon-cyan);
+            background: var(--bg-card);
+            border: 2px solid var(--neon-cyan);
+            box-shadow: 
+                0 0 8px rgba(0, 245, 255, 0.3),
+                inset 0 0 15px rgba(0, 245, 255, 0.1);
+            text-shadow: 0 0 3px var(--neon-cyan);
+        }
+        .opt-box .btn.pre-btn:hover {
+            background: rgba(0, 245, 255, 0.1);
+            box-shadow: 
+                0 0 15px rgba(0, 245, 255, 0.5),
+                0 0 30px rgba(0, 245, 255, 0.3),
+                inset 0 0 25px rgba(0, 245, 255, 0.2);
+        }
+        .opt-box .btn.next-btn {
+            color: var(--bg-dark);
+            background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-pink) 100%);
+            border: 2px solid transparent;
+            box-shadow: 
+                0 0 10px rgba(0, 245, 255, 0.4),
+                0 0 20px rgba(255, 0, 255, 0.2);
+            font-weight: 700;
+            animation: nextBtnGlow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes nextBtnGlow {
+            from {
+                box-shadow: 
+                    0 0 10px rgba(0, 245, 255, 0.4),
+                    0 0 20px rgba(255, 0, 255, 0.2);
+            }
+            to {
+                box-shadow: 
+                    0 0 15px rgba(0, 245, 255, 0.6),
+                    0 0 30px rgba(255, 0, 255, 0.4),
+                    0 0 45px rgba(0, 245, 255, 0.2);
+            }
+        }
+        
+        .opt-box .btn.next-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 0 20px rgba(0, 245, 255, 0.6),
+                0 0 40px rgba(255, 0, 255, 0.4),
+                0 0 60px rgba(0, 245, 255, 0.2);
+        }
+        .opt-box .btn.copy-btn {
+            color: var(--neon-yellow);
+            background: var(--bg-card);
+            border: 2px solid var(--neon-yellow);
+            box-shadow: 
+                0 0 8px rgba(255, 255, 0, 0.3),
+                inset 0 0 15px rgba(255, 255, 0, 0.1);
+            text-shadow: 0 0 3px var(--neon-yellow);
+        }
+        .opt-box .btn.copy-btn:hover {
+            background: rgba(255, 255, 0, 0.1);
+            box-shadow: 
+                0 0 15px rgba(255, 255, 0, 0.5),
+                0 0 30px rgba(255, 255, 0, 0.3),
+                inset 0 0 25px rgba(255, 255, 0, 0.2);
+        }
+
+        .share-result-box {
+            display: none;
+            width: 100%;
+            max-width: 960px;
+            margin-top: 14px;
+            padding: 14px 16px;
+            background: rgba(10, 10, 26, 0.75);
+            border: 1px solid rgba(0, 245, 255, 0.18);
+            border-radius: 18px;
+            box-shadow: var(--shadow-card);
+            backdrop-filter: blur(10px);
+        }
+
+        /* ── 视图模式 ── */
+        .view-records .page-header { padding-top: 32px; }
+        .view-records .stage {
+            justify-content: flex-start;
+            padding-top: 4px;
+            background: transparent;
+        }
+        .view-records #list,
+        .view-records .share-result-box {
+            position: relative;
+            z-index: 1;
+        }
+        .view-records #list {
+            margin-top: 2px;
+        }
+        
+        /* ── Created By Deerflow 签名 ── */
+        .deerflow-badge {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 8px 16px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: var(--bg-panel);
+            border: 1px solid rgba(0, 245, 255, 0.2);
+            border-radius: 20px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 6px rgba(0, 245, 255, 0.1);
+        }
+        .deerflow-badge:hover {
+            color: var(--neon-cyan);
+            border-color: var(--neon-cyan);
+            box-shadow: 
+                0 0 10px rgba(0, 245, 255, 0.3),
+                inset 0 0 15px rgba(0, 245, 255, 0.1);
+            text-shadow: 0 0 3px var(--neon-cyan);
+            transform: translateY(-2px);
+        }
+        .deerflow-badge::before {
+            content: '✦';
+            margin-right: 6px;
+            color: var(--neon-pink);
+            text-shadow: 0 0 3px var(--neon-pink);
         }
     </style>
 </head>
 
 <body>
+<div class="particles">
+    <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+    <div class="particle" style="left: 20%; animation-delay: 2s;"></div>
+    <div class="particle" style="left: 30%; animation-delay: 4s;"></div>
+    <div class="particle" style="left: 40%; animation-delay: 6s;"></div>
+    <div class="particle" style="left: 50%; animation-delay: 8s;"></div>
+    <div class="particle" style="left: 60%; animation-delay: 10s;"></div>
+    <div class="particle" style="left: 70%; animation-delay: 12s;"></div>
+    <div class="particle" style="left: 80%; animation-delay: 14s;"></div>
+    <div class="particle" style="left: 90%; animation-delay: 16s;"></div>
+</div>
 <div id="container">
-    <div id="title"></div>
-    <div id="disc"></div>
-    <img id="image" />
-    <div id="list"></div>
-    <div class="opt-box">
+    <header class="page-header">
+        <div class="title-wrap">
+            <div id="title"></div>
+        </div>
+        <div id="disc"></div>
+    </header>
+    <main class="stage">
+        <div class="prize-frame" id="image-wrap">
+            <img id="image" alt="奖品图片" />
+        </div>
+        <div id="list"></div>
+        <div class="opt-box share-result-box" id="share-result-box"></div>
+    </main>
+    <footer class="opt-box">
         <span class="btn pre-btn" onclick="previousStep()">查看上一奖项</span>
         <span class="btn next-btn" onclick="nextStep()">开始抽奖</span>
-    </div>
+    </footer>
 </div>
+<a href="https://deerflow.tech" target="_blank" class="deerflow-badge">Created By Deerflow</a>
 <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="./js/auth.js"></script>
 <script>
 
     var params = new URLSearchParams(window.location.search);
     var activityId = params.get('activityId');
     var valid = params.get('valid');
-    var userToken = localStorage.getItem("user_token");
+    var disc = document.getElementById('disc');
+    var image = document.getElementById('image');
+    var imageWrap = document.getElementById('image-wrap');
+    var list = document.getElementById('list');
+    var shareResultBox = document.getElementById('share-result-box');
+    var container = document.getElementById('container');
 
+    var steps = null;
+    var step = 0;
+    var names = null;
+    var state = '';
 
-    // 获取网页上通过id为disc、image和list的DOM元素的引用。
-    var disc = document.getElementById('disc')
-    var image = document.getElementById('image')
-    var list = document.getElementById('list')
-
-    // 奖品列表
-    var steps = null
-    // 抽到第几个了
-    var step = 0
-    // 人员列表
-    var names = null
-    // 正在做什么
-    var state = ''
-
-    // 等待DOM加载完成
     document.addEventListener('DOMContentLoaded', function() {
-        var titleDiv = document.getElementById('title');
-        var activityName = params.get('activityName');
-        titleDiv.textContent = activityName;
+        document.getElementById('title').textContent = params.get('activityName') || '';
     });
+
+    function setViewMode(mode) {
+        container.className = mode ? 'view-' + mode : '';
+    }
+
+    function formatPrizeDisc(data) {
+        return '<span class="disc-tier">' + data.prizeTierName + '</span>' +
+               '<span class="disc-name">' + data.name + '</span>' +
+               '<span class="disc-count">' + data.prizeAmount + ' 份</span>';
+    }
 
     function formatDate(dateString) {
         var date = new Date(dateString);
         var hour = ('0' + date.getHours()).slice(-2);
         var minute = ('0' + date.getMinutes()).slice(-2);
         var second = ('0' + date.getSeconds()).slice(-2);
-        // 构建格式化的日期字符串
         return hour + ':' + minute + ':' + second;
     }
 
-    // showPic函数用于显示图片和奖品信息。
-    // 它将data.disc设置为disc元素的innerHTML，将data.image设置为image元素的src属性，然后显示图片并隐藏列表。
-    function showPic(data) {
-        disc.innerHTML = data.prizeTierName + ' ' + data.name + ' ' + data.prizeAmount + '份'
-        image.src = data.imageUrl ? data.imageUrl : '/pic/defaultPrizeImg.png'
-        image.style.display = 'inline'
-        list.style.display = 'none'
+    function clearList() {
         while (list.hasChildNodes()) {
-            list.removeChild(list.firstChild)
+            list.removeChild(list.firstChild);
+        }
+        list.className = '';
+    }
+
+    function showPic(data) {
+        setViewMode('pic');
+        disc.innerHTML = formatPrizeDisc(data);
+        image.src = data.imageUrl ? data.imageUrl : '/pic/defaultPrizeImg.png';
+        imageWrap.style.display = 'block';
+        list.style.display = 'none';
+        shareResultBox.style.display = 'none';
+        shareResultBox.innerHTML = '';
+        clearList();
+    }
+
+    function getRecordTierClass(prizeTier) {
+        if (prizeTier === '特等奖') return 'tier-special';
+        if (prizeTier === '一等奖') return 'tier-first';
+        if (prizeTier === '二等奖') return 'tier-second';
+        if (prizeTier === '三等奖') return 'tier-third';
+        return 'tier-default';
+    }
+
+    function groupRecordsByTier(records) {
+        var map = {};
+        var order = [];
+        for (var i = 0; i < records.length; i++) {
+            var tier = records[i].prizeTier || '';
+            if (!map[tier]) {
+                map[tier] = [];
+                order.push(tier);
+            }
+            map[tier].push(records[i]);
+        }
+        return order.map(function(tier) {
+            return { tier: tier, records: map[tier] };
+        });
+    }
+
+    function shouldShowPrizeName(tier) {
+        return tier === '特等奖' || tier === '一等奖' ||
+               tier === '二等奖' || tier === '三等奖';
+    }
+
+    function renderTierHeader(tier, tierRecords) {
+        var header = document.createElement('div');
+        header.className = 'tier-header';
+        var badge = document.createElement('span');
+        badge.className = 'tier-badge';
+        badge.textContent = tier;
+        header.appendChild(badge);
+        if (shouldShowPrizeName(tier) && tierRecords[0].prizeName) {
+            var prize = document.createElement('span');
+            prize.className = 'tier-prize';
+            prize.textContent = tierRecords[0].prizeName;
+            header.appendChild(prize);
+        }
+        return header;
+    }
+
+    function renderWinningRecords(records) {
+        var groups = groupRecordsByTier(records);
+        for (var g = 0; g < groups.length; g++) {
+            var group = groups[g];
+            var section = document.createElement('div');
+            section.className = 'tier-section ' + getRecordTierClass(group.tier);
+            section.appendChild(renderTierHeader(group.tier, group.records));
+
+            for (var i = 0; i < group.records.length; i++) {
+                var record = group.records[i];
+                var line = document.createElement('div');
+                line.className = 'winner-line';
+
+                var label = document.createElement('span');
+                label.className = 'winner-label';
+                label.textContent = '中奖者';
+                line.appendChild(label);
+
+                var nameSpan = document.createElement('span');
+                nameSpan.className = 'winner-name';
+                nameSpan.textContent = record.winnerName;
+                line.appendChild(nameSpan);
+
+                var timeSpan = document.createElement('span');
+                timeSpan.className = 'winner-time';
+                timeSpan.textContent = formatDate(record.winningTime);
+                line.appendChild(timeSpan);
+
+                section.appendChild(line);
+            }
+            list.appendChild(section);
         }
     }
 
-    // 查询中奖记录
     function showRecords() {
-        disc.innerHTML = "中奖名单"
-        image.style.display = 'none'
-        list.style.display = 'block'
-        while (list.hasChildNodes()) {
-            list.removeChild(list.firstChild)
-        }
+        setViewMode('records');
+        disc.innerHTML = '<span class="disc-subtitle">中 奖 名 单</span>';
+        imageWrap.style.display = 'none';
+        list.style.display = 'block';
+        shareResultBox.style.display = 'none';
+        shareResultBox.innerHTML = '';
+        clearList();
         $.ajax({
             url: '/winning-records/show',
             type: 'POST',
             dataType: 'json',
             contentType: 'application/json',
-            data: JSON.stringify({activityId: activityId}),
-            headers: {
-                'user_token': userToken
-            },
+            data: JSON.stringify({activityId: Number(activityId)}),
+            headers: authHeaders(),
             success: function(result) {
                 if (result.code != 200) {
-                    alert("查询中奖记录失败！" + result.msg);
+                    alert("查询中奖记录失败！" + result.message);
                 } else {
-                    var records = result.data
-                    list.className = "records-item"
-                    for (var i = 0; i < records.length; ++i) {
-                        var item = document.createElement('div')
-                        item.textContent = formatDate(records[i].winningTime) + ' '
-                        + records[i].winnerName + ' '
-                        + records[i].prizeName + ' '
-                        + records[i].prizeTier + ' '
-                        list.appendChild(item)
-                    }
+                    list.className = 'records-item';
+                    renderWinningRecords(result.data);
 
-                    // 分享链接
-                    // 检查是否已经有分享按钮，如果没有则创建
-                    var optBox = document.querySelector('.opt-box');
-                    var existingBtn = optBox.querySelector('.btn.copy-btn');
-                    if (!existingBtn) {
+                    shareResultBox.style.display = 'flex';
+                    if (!shareResultBox.querySelector('.btn.copy-btn')) {
                         var newBtn = document.createElement('span');
                         newBtn.className = 'btn copy-btn';
-                        // 设置点击事件处理函数
                         newBtn.onclick = function() {
-                            // 创建URL对象
                             var currentUrl = new URL(window.location);
-                            // 创建URLSearchParams对象
                             var searchParams = currentUrl.searchParams;
-                            // 更新参数
                             searchParams.delete('valid');
                             searchParams.append('valid', false);
-                            // 防止分享再分享，拼接多个参数
                             searchParams.delete('hideButton');
                             searchParams.append('hideButton', true);
-                            // 更新URL对象的搜索字符串
                             currentUrl.search = searchParams.toString();
-                            // 获取当前页面的URL
-                            var url = currentUrl;
-                            // 执行复制操作
-                            copyToClipboard(url);
+                            copyToClipboard(currentUrl);
                         };
-                        // 设置span元素的文本内容
                         newBtn.textContent = '分享结果';
-                        // 将新的span元素添加到.opt-box容器中
-                        optBox.appendChild(newBtn);
+                        shareResultBox.appendChild(newBtn);
                     }
 
-                    // 是否隐藏按钮
                     var hideButton = params.get('hideButton');
-                    if ((hideButton == null && valid === 'false')
-                        || hideButton === 'true') {
-                        // 隐藏所有元素
-                        var buttons = document.querySelectorAll('.btn.pre-btn, .btn.next-btn');
-                        buttons.forEach(function(button) {
+                    if ((hideButton == null && valid === 'false') || hideButton === 'true') {
+                        document.querySelectorAll('.btn.pre-btn, .btn.next-btn').forEach(function(button) {
                             button.style.display = 'none';
                         });
                     }
@@ -222,18 +987,13 @@
         });
     }
 
-    // 复制当前地址
     function copyToClipboard(textToCopy) {
-        // navigator clipboard 需要https等安全上下文
         if (navigator.clipboard && window.isSecureContext) {
-            // navigator clipboard 向剪贴板写文本
             return navigator.clipboard.writeText(textToCopy)
-                .then(() => {alert("链接已复制到剪贴板");});
+                .then(function() { alert("链接已复制到剪贴板"); });
         } else {
-            // 创建text area
-            let textArea = document.createElement("textarea");
+            var textArea = document.createElement("textarea");
             textArea.value = textToCopy;
-            // 使text area不在viewport，同时设置不可见
             textArea.style.position = "absolute";
             textArea.style.opacity = 0;
             textArea.style.left = "-999999px";
@@ -241,8 +1001,7 @@
             document.body.appendChild(textArea);
             textArea.focus();
             textArea.select();
-            return new Promise((res, rej) => {
-                // 执行复制命令并移除文本框
+            return new Promise(function(res, rej) {
                 document.execCommand('copy') ? res() : rej();
                 textArea.remove();
                 alert("链接已复制到剪贴板");
@@ -250,269 +1009,209 @@
         }
     }
 
-    // showBlink函数用于显示闪烁的文字。
-    // 它首先设置奖品信息，隐藏图片，显示列表，然后创建与data.count相等数量的span元素。
     function showBlink(data) {
-        disc.innerHTML = data.prizeTierName + ' ' + data.name + ' ' + data.prizeAmount + '份'
-        image.style.display = 'none'
-        list.style.display = 'block'
-        var spans = []
+        setViewMode('blink');
+        disc.innerHTML = formatPrizeDisc(data);
+        imageWrap.style.display = 'none';
+        list.style.display = 'flex';
+        clearList();
+        list.className = 'draw-grid';
+
+        var spans = [];
         for (var i = 0; i < data.prizeAmount; ++i) {
-            var span = document.createElement('span')
-            list.appendChild(span)
-            spans.push(span)
+            var span = document.createElement('span');
+            span.className = 'draw-slot';
+            list.appendChild(span);
+            spans.push(span);
         }
 
-        // doBlink函数用于实现文字的闪烁效果，通过window.requestAnimationFrame来循环调用。
         function doBlink() {
             if (state == 'showBlink') {
-                // Math.random() 生成一个 [0, 1) 范围内的伪随机数，
-                // 所以表达式的结果将在 (-0.5, 0.5] 范围内，这会导致 names 数组的元素随机排序。
-                names.sort(function(a, b) {
-                    return 0.5 - Math.random()
-                })
-                // 只展示当前奖项个数的随机人名
+                names.sort(function() { return 0.5 - Math.random(); });
                 for (var i = 0; i < data.prizeAmount; ++i) {
-                    spans[i].innerHTML = names[i].userName
+                    spans[i].textContent = names[i].userName;
                 }
-                window.requestAnimationFrame(doBlink)
+                window.requestAnimationFrame(doBlink);
             }
         }
-
-      // 告诉浏览器——你希望执行一个动画，并且要求浏览器在下次重绘之前调用指定的回调函数更新动画。
-      window.requestAnimationFrame(doBlink)
+        window.requestAnimationFrame(doBlink);
     }
 
-    // 通过后端展示奖品维度中奖者，主要是防止页面刷新
+    function appendWinnerChips(users) {
+        for (var i = 0; i < users.length; ++i) {
+            var span = document.createElement('span');
+            span.className = 'winner-chip';
+            span.style.animationDelay = (i * 0.12) + 's';
+            span.textContent = users[i].userName;
+            list.appendChild(span);
+        }
+    }
+
     function showWinnerListWithPrize(data) {
         $.ajax({
             url: '/winning-records/show',
             type: 'POST',
             dataType: 'json',
             contentType: 'application/json',
-            headers: {
-                'user_token': userToken
-            },
-            data: JSON.stringify({activityId: activityId, prizeId: data.prizeId}),
+            headers: authHeaders(),
+            data: JSON.stringify({activityId: Number(activityId), prizeId: data.prizeId}),
             success: function(result) {
                 if (result.code != 200) {
-                    alert("查询中奖记录失败！" + result.msg);
+                    alert("查询中奖记录失败！" + result.message);
                 } else {
-                    var luckRecords = result.data
-                    // 从names中移除幸运儿
-                    var luck = []
-                    // 获得需要删除的用户id
-                    var needRemoves = luckRecords.map(function(luckRecord) {
-                        return luckRecord.winnerId;
-                    });
-                    console.log("needRemoves" + JSON.stringify(needRemoves))
-                    console.log("names1" + JSON.stringify(names))
-                    // 从names中移除包含在luckRecords中的name对应的元素
+                    var luckRecords = result.data;
+                    var luck = [];
+                    var needRemoves = luckRecords.map(function(r) { return r.winnerId; });
                     for (var i = 0; i < names.length; i++) {
                         if (needRemoves.includes(names[i].userId)) {
-                            var tmp = names.splice(i, 1)  // 移除当前项，并更新索引i，因为后面的项会向前移动
-                            luck = luck.concat(tmp)
-                            console.log("tmp" + JSON.stringify(tmp))
-                            i--  // 减1以确保索引i仍然指向当前的项
+                            luck = luck.concat(names.splice(i, 1));
+                            i--;
                         }
                     }
-                    console.log("names2" + JSON.stringify(names))
-                    console.log("luck" + JSON.stringify(luck))
-                    // 只存放当前奖项的人员信息，下次抽奖会被覆盖
-                    data.list = luck.map(x => x)
-                    for (var i = 0; i < data.list.length; ++i) {
-                        var span = document.createElement('span')
-                        span.innerHTML = data.list[i].userName
-                        list.appendChild(span)
-                    }
+                    data.list = luck.map(function(x) { return x; });
+                    appendWinnerChips(data.list);
                 }
             }
         });
     }
 
-    // showList函数用于显示静态的文字列表。它设置奖品信息，隐藏图片，显示列表，并将data.list中的数据添加到列表中。
     function showList(data) {
-        disc.innerHTML = data.prizeTierName + ' ' + data.name + ' ' + data.prizeAmount + '份'
-        image.style.display = 'none'
-        list.style.display = 'block'
-        while (list.hasChildNodes()) {
-            list.removeChild(list.firstChild)
-        }
+        setViewMode('winners');
+        disc.innerHTML = formatPrizeDisc(data);
+        imageWrap.style.display = 'none';
+        list.style.display = 'flex';
+        clearList();
+        list.className = 'winner-grid';
 
-        // data.list是前端保存的临时数据，若当前抽奖页刷新，则数据丢失
-        // 因此判断一下是否为空，为空需要查询后端
-        data.list = data.list || []
+        data.list = data.list || [];
         if (data.list.length > 0) {
-            for (var i = 0; i < data.list.length; ++i) {
-                var span = document.createElement('span')
-                span.innerHTML = data.list[i].userName
-                list.appendChild(span)
-            }
+            appendWinnerChips(data.list);
         } else {
-            showWinnerListWithPrize(data)
+            showWinnerListWithPrize(data);
         }
     }
 
-    // 这是改变next-btn按钮文本的函数
     function changeNextButtonText(text) {
-        var nextButton = document.querySelector('.btn.next-btn');
-        nextButton.textContent = text;
+        document.querySelector('.btn.next-btn').textContent = text;
     }
 
     function saveLuck() {
-        var data = steps[step]
-
-        var luckUserList = []
+        if (!ensureLoggedIn()) return;
+        var data = steps[step];
+        var luckUserList = [];
         for (var i = 0; i < data.list.length; ++i) {
             luckUserList.push({
                 userId: data.list[i].userId,
                 userName: data.list[i].userName
-            })
+            });
         }
-
-        var drawPrizesData = {
-            activityId: activityId,
-            prizeId: data.prizeId,
-            winningTime: new Date(),
-            winnerList: luckUserList
-        };
-
-        // 发送AJAX请求
         $.ajax({
             url: '/draw-prize',
             type: 'POST',
             dataType: 'json',
             contentType: 'application/json',
-            headers: {
-                'user_token': userToken
-            },
-            data: JSON.stringify(drawPrizesData),
+            headers: authHeaders(),
+            data: JSON.stringify({
+                activityId: Number(activityId),
+                prizeId: data.prizeId,
+                winningTime: new Date(),
+                winnerList: luckUserList
+            }),
             success: function(result) {
                 if (result.code != 200) {
-                    alert("抽奖失败！" + result.msg);
+                    alert("抽奖失败！" + result.message);
                 }
             },
-            error:function(err){
-                console.log(err);
-                if(err!=null && err.status==401){
+            error: function(err) {
+                if (err != null && err.status == 401) {
                     alert("用户未登录, 即将跳转到登录页!");
-                    // 已经被拦截器拦截了, 未登录
-                    location.href ="/blogin.html";
+                    location.href = "/blogin.html";
                 }
             }
         });
     }
 
-    // nextStep函数用于根据当前状态显示下一个步骤的内容。
-    // 它根据state的值和data.list的长度来决定是显示图片、闪烁文字还是静态文字列表，并更新step和state。
     function nextStep() {
-        var data = steps[step]
-        console.log("steps[" + step + "]:" + JSON.stringify(data))
+        var data = steps[step];
         if (state == 'showPic') {
             if (data.valid) {
-                // 还没抽：抽奖
-                state = 'showBlink'
-                showBlink(data)
-                changeNextButtonText('点我确定')
+                state = 'showBlink';
+                showBlink(data);
+                changeNextButtonText('点我确定');
             } else {
-                // 抽过了：展示
-                state = 'showList'
-                showList(data)
-                changeNextButtonText('已抽完，下一步')
+                state = 'showList';
+                showList(data);
+                changeNextButtonText('已抽完，下一步');
             }
         } else if (state == 'showBlink') {
-            // 从names中移除幸运儿，并将幸运儿存放起来
-            var luck = names.splice(0, data.prizeAmount)
-            // 只存放当前奖项的人员信息，下次抽奖会被覆盖
-            data.list = luck.map(x => x)
-            console.log("data.list:" + JSON.stringify(data.list))
-            // 调用后端抽奖接口，保存中奖信息
-            saveLuck()
-            data.valid = false
-            state = 'showList'
-            showList(data)
-            changeNextButtonText('已抽完，下一步')
+            var luck = names.splice(0, data.prizeAmount);
+            data.list = luck.map(function(x) { return x; });
+            saveLuck();
+            data.valid = false;
+            state = 'showList';
+            showList(data);
+            changeNextButtonText('已抽完，下一步');
         } else if (state == 'showList') {
             if (step < (steps.length - 1)) {
-                ++step
-                state = ''
-                nextStep()
-                changeNextButtonText('开始抽奖')
+                ++step;
+                state = '';
+                nextStep();
+                changeNextButtonText('开始抽奖');
             } else {
-                // 抽奖结束，展示全量中奖列表
-                if (step == (steps.length - 1)) {
-                    ++step
-                }
-                showRecords()
-                changeNextButtonText('已全部抽完')
+                if (step == (steps.length - 1)) ++step;
+                showRecords();
+                changeNextButtonText('已全部抽完');
             }
         } else {
-            state = 'showPic'
-            showPic(data)
-            changeNextButtonText('开始抽奖')
+            state = 'showPic';
+            showPic(data);
+            changeNextButtonText('开始抽奖');
         }
     }
 
-    // previousStep函数用于返回到上一个步骤。如果当前步骤不是第一个步骤，则减少step的值，然后调用nextStep函数。
     function previousStep() {
-        if (step > 0) {
-            --step
-        }
-        state = ''
-        nextStep()
+        if (step > 0) --step;
+        state = '';
+        nextStep();
     }
 
-    // 抽奖页面加载逻辑
     function drawPage() {
-        // 判断活动是否有效:进行中
         if (valid == "true") {
-            // 判断是用户还是管理员，只有管理员有权限抽奖
-            var identity = localStorage.getItem("user_identity");
-            if (identity == "ADMIN") {
-                // 在页面加载完成后，调用reloadConf函数并传入nextStep作为回调函数，以初始化页面显示。
-                reloadConf(nextStep)
-            } else {
-                alert("抽奖未结束，由于您不是管理员，无权限限参与抽奖。请耐心等待抽奖结束后查看中奖名单");
-            }
+            if (!ensureLoggedIn()) return;
+            reloadConf(nextStep);
         } else {
-            showRecords()
+            showRecords();
         }
     }
 
-    // reloadConf函数用于重新加载配置文件。
-    // 如果提供了回调函数func，则在文件读取完成后调用它。
     function reloadConf(func) {
-        // 发送AJAX请求
+        if (!ensureLoggedIn()) return;
         $.ajax({
-            url: '/activity-detail/find',
+            url: '/activity/detail/find',
             type: 'GET',
             data: { activityId: activityId },
             dataType: 'json',
-            headers: {
-                'user_token': userToken
-            },
+            headers: authHeaders(),
             success: function(result) {
                 if (result.code != 200) {
-                    alert("获取活动详情失败！" + result.msg);
+                    alert("获取活动详情失败！" + result.message);
                 } else {
-                    names = result.data.users;
+                    names = result.data.users.filter(function(u) { return u.valid; });
                     steps = result.data.prizes;
                     if (func) func();
                 }
             },
-            error:function(err){
-                console.log(err);
-                if(err!=null && err.status==401){
+            error: function(err) {
+                if (err != null && err.status == 401) {
                     alert("用户未登录, 即将跳转到登录页!");
-                    // 已经被拦截器拦截了, 未登录
-                    location.href ="/blogin.html";
+                    location.href = "/blogin.html";
                 }
             }
         });
     }
 
-    // 抽奖页起始逻辑
-    drawPage()
+    syncUserIdentity();
+    drawPage();
 </script>
 </body>
 </html>
