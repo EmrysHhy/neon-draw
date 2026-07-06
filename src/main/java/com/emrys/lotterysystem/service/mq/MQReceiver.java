@@ -16,7 +16,6 @@ import com.emrys.lotterysystem.service.DrawPrizeService;
 
 import com.emrys.lotterysystem.service.constants.MQConstant;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,7 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
-
+import tools.jackson.databind.ObjectMapper;
 
 
 import java.util.List;

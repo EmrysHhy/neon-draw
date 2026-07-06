@@ -18,14 +18,12 @@ import com.emrys.lotterysystem.service.enums.ActivityPrizeStatusEnum;
 import com.emrys.lotterysystem.service.enums.ActivityStatusEnum;
 import com.emrys.lotterysystem.service.enums.ActivityUserStatusEnum;
 import com.emrys.lotterysystem.service.constants.MQConstant;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -335,7 +333,7 @@ public class DrawPrizeServiceImpl implements DrawPrizeService {
             return null;
         }
         try {
-            return objectMapper.readValue(value, new TypeReference<List<WinningRecordDO>>() {});
+            return objectMapper.readValue(value, objectMapper.getTypeFactory().constructCollectionType(List.class, WinningRecordDO.class));
         } catch (Exception e) {
             log.error("从Redis获取中奖记录失败, key:{}, error:{}", key, e.getMessage());
             return null;
@@ -417,8 +415,8 @@ public class DrawPrizeServiceImpl implements DrawPrizeService {
         //3.重进加入缓存
         try {
             redis.setIfAbsent(key, objectMapper.writeValueAsString(records), WINNING_TIMEOUT);
-        } catch (JsonProcessingException e) {
-            throw new ServiceException(ServiceErrorCodeConstants.WINNING_RECORD_CACHE_ERROR);
+        } catch (Exception e) {
+            log.error("缓存中奖记录失败, key:{}, error:{}", key, e.getMessage());
         }
         return ServiceConverter.convertToShowWinningRecordsDTOList(records);
     }

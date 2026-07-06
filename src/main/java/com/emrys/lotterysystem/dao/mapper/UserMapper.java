@@ -20,7 +20,7 @@ public interface UserMapper {
     @Select("select count(*) from user where user_name = #{userName}")
     int countByName(@Param("userName")String name);
 
-    @Insert("insert into user(user_name,password,email,phone_number,identity) values ( #{userName}, #{password}, #{email}, #{phoneNumber}, #{identity})")
+    @Insert("insert into user(user_name,password,email,phone_number,identity,admin_id) values ( #{userName}, #{password}, #{email}, #{phoneNumber}, #{identity}, #{adminId})")
     @Options(useGeneratedKeys=true,keyProperty="id",keyColumn="id")  //可以将自增id加入到userDO中
     int insert(UserDO userDO);
     @Select("select * from user where phone_number = #{phoneNumber}")

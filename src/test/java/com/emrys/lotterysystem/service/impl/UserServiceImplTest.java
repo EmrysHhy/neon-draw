@@ -6,41 +6,29 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 /**
- *
  * @author Emrys
- * content:
  */
 @SpringBootTest
 class UserServiceImplTest {
+
     @Autowired
     UserServiceImpl userService;
+
     @Test
     void findUserInfo() {
         List<UserDTO> userInfo = userService.findUserInfo(null);
         System.out.println(userInfo);
-        for(UserDTO x: userInfo){
+        for (UserDTO x : userInfo) {
             System.out.println(x.toString());
         }
     }
-    @Test
-    void test(){
-        List<UserDTO> userDTOS = userService.findUserInfo(UserIdentityEnum.forName(null));
-        System.out.println(userDTOS);
-    }
 
     @Test
-    void test2(){
-        try {
-            int a = 7/0;
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-        }
-        System.out.println(321);
+    void test() {
+        List<UserDTO> userDTOS = userService.findUserInfo(UserIdentityEnum.forName(null));
+        System.out.println(userDTOS);
     }
 }

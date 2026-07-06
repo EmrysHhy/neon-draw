@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration  scan="true" scanPeriod="60 seconds" debug="false">
     <springProfile name="dev">
+        <!-- 引入 Spring Boot 默认日志变量（含 CONSOLE_LOG_PATTERN 彩色格式） -->
+        <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
         <!--输出到控制台-->
         <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
             <encoder>
-                <pattern>%d{HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n%ex</pattern>
+                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+                <charset>UTF-8</charset>
             </encoder>
         </appender>
         <root level="info">

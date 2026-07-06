@@ -56,7 +56,7 @@
         </div>
         <ul class="nav flex-column sub-category">
           <li><a class="nav-link" id="userList" data-desc="renyuan" href="user-list.html">人员列表</a></li>
-          <li><a class="nav-link" id="register" data-desc="renyuancreate" href="register.html">注册用户</a></li>
+          <li><a class="nav-link" id="register" data-desc="renyuancreate" href="register.html?admin=false">注册用户</a></li>
         </ul>
       </li>
     </ul>
@@ -105,10 +105,11 @@
     // 获取当前点击的链接的data-desc属性值
     var dataDesc = $(this).data('desc');
     var page = '';
+    var href = $(this).attr('href').split('?')[0];
     if (dataDesc === "renyuancreate") {
-      page = $(this).attr('href') + "?param=" + randomParam + "&jumpList=true&admin=false";
+      page = href + "?admin=false&param=" + randomParam;
     } else {
-      page = $(this).attr('href') + "?param=" + randomParam;
+      page = href + "?param=" + randomParam;
     }
     $('#contentFrame').attr('src', page);
   });

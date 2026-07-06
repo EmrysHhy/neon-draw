@@ -1,14 +1,11 @@
 package com.emrys.lotterysystem.controller;
 
 import com.emrys.lotterysystem.controller.convert.ControllerConverter;
-import com.emrys.lotterysystem.common.errorcode.ControllerErrorCodeConstants;
-import com.emrys.lotterysystem.common.exception.ControllerException;
 import com.emrys.lotterysystem.common.pojo.CommonResult;
 import com.emrys.lotterysystem.controller.param.UserPasswordLoginParam;
 import com.emrys.lotterysystem.controller.param.UserRegisterParam;
 import com.emrys.lotterysystem.controller.param.UserVarificationLoginParam;
 import com.emrys.lotterysystem.controller.result.BaseUserInfoResult;
-import com.emrys.lotterysystem.controller.result.UserLoginResult;
 import com.emrys.lotterysystem.controller.result.UserRegisterResult;
 import com.emrys.lotterysystem.service.UserService;
 import com.emrys.lotterysystem.service.VarificationCodeService;
@@ -21,6 +18,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -43,9 +41,10 @@ public class UserController {
      * 注册接口
      */
     @RequestMapping("/register")
-    public CommonResult<UserRegisterResult> userRegister(@Validated @RequestBody UserRegisterParam param) { //json转换成java对象
+    public CommonResult<UserRegisterResult> userRegister(@Validated @RequestBody UserRegisterParam param,
+                                                         @RequestHeader(value = "user_token", required = false) String token) {
         log.info("user register, param: {}", param);
-        UserRegisterDTO dto = userService.register(param);
+        UserRegisterDTO dto = userService.register(param, token);
         return CommonResult.success(ControllerConverter.convertToUserRegisterResult(dto));
     }
 

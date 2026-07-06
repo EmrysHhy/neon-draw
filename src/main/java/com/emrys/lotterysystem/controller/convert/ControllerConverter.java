@@ -57,6 +57,20 @@ public class ControllerConverter {
         return userRegisterResult;
     }
 
+    public static List<GroupResult> convertToGroupResultList(List<GroupDTO> list) {
+        if (list == null) {
+            return List.of();
+        }
+        return list.stream().filter(Objects::nonNull).map(dto -> {
+            GroupResult result = new GroupResult();
+            result.setGroupId(dto.getGroupId());
+            result.setName(dto.getName());
+            result.setDescription(dto.getDescription());
+            result.setMemberCount(dto.getMemberCount());
+            return result;
+        }).toList();
+    }
+
     /**
      * 将 PageListDTO<PrizeDTO> 转换为 FindPrizeListResult
      */

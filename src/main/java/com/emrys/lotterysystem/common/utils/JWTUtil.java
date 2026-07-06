@@ -1,11 +1,15 @@
 package com.emrys.lotterysystem.common.utils;
 
 
+import com.emrys.lotterysystem.common.errorcode.ServiceErrorCodeConstants;
+import com.emrys.lotterysystem.common.exception.ServiceException;
+import com.emrys.lotterysystem.service.enums.UserIdentityEnum;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
@@ -65,5 +69,26 @@ public class JWTUtil {
         return claims;
     }
 
+    /**
+     * 解析 token 并返回当前登录管理员 id
+     */
+    public static Long getAdminId(String token) {
+        if (!StringUtils.hasText(token)) {
+            throw new ServiceException(ServiceErrorCodeConstants.REGISTER_ADMIN_TOKEN_REQUIRED);
+        }
+        Claims claims = parseToken(token);
+        if (claims == null) {
+            throw new ServiceException(ServiceErrorCodeConstants.REGISTER_TOKEN_INVALID);
+        }
+        Object identityClaim = claims.get("identity");
+        if (!UserIdentityEnum.ADMIN.name().equalsIgnoreCase(String.valueOf(identityClaim))) {
+            throw new ServiceException(ServiceErrorCodeConstants.IDENTITY_ERROR);
+        }
+        Object idClaim = claims.get("id");
+        if (idClaim == null) {
+            throw new ServiceException(ServiceErrorCodeConstants.REGISTER_TOKEN_INVALID);
+        }
+        return Long.valueOf(String.valueOf(idClaim));
+    }
 
 }

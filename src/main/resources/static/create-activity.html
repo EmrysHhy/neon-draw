@@ -7,6 +7,17 @@
     <link rel="stylesheet" href="./css/base.css">
     <link rel="stylesheet" href="./css/toastr.min.css">
     <style>
+        /* 弹窗须 fixed 覆盖 iframe 视口，避免被 body.cyber-page 子元素规则影响 */
+        #prizesModal,
+        #usersModal {
+            position: fixed !important;
+            inset: 0 !important;
+            z-index: 10000 !important;
+        }
+        #prizesModal.is-open,
+        #usersModal.is-open {
+            display: flex !important;
+        }
         .desc-row { margin-bottom: 60px; }
         .form-btn-box {
             display: flex;
@@ -18,11 +29,15 @@
             height: 48px;
         }
         .pre-btn { margin-right: 20px; }
-        #prizesContainer {
-            height: 406px;
-            margin-bottom: 40px;
+        #prizesContainer,
+        #usersContainer {
+            max-height: 360px;
+            margin-bottom: 24px;
             overflow-y: auto;
-            padding: 0 26px;
+            padding: 0 8px;
+        }
+        #prizesContainer {
+            padding: 0 12px;
         }
         .prize-item,
         .user-item {
@@ -119,13 +134,20 @@
     var userToken = localStorage.getItem("user_token");
     // 初始时奖品列表为空: 勾选的奖品存放
     var selectedPrizes = [];
-    // 显示奖品选择模态框
-    function showPrizesModal() {
-        $('#prizesModal').css('display', 'block');
+
+    function setModalOpen(open) {
+        var anyOpen = $('.cyber-modal.is-open').length > 0;
+        document.body.classList.toggle('modal-open', open || anyOpen);
     }
-    // 隐藏奖品选择模态框
+
+    function showPrizesModal() {
+        $('#prizesModal').addClass('is-open');
+        setModalOpen(true);
+    }
+
     function hidePrizesModal() {
-        $('#prizesModal').css('display', 'none');
+        $('#prizesModal').removeClass('is-open');
+        setModalOpen(false);
     }
     // 获取奖品列表的函数
     function fetchPrizes() {
@@ -195,13 +217,15 @@
 
     // 初始时人员列表为空, 存放的勾选的人员信息
     var selectedUsers = [];
-    // 显示人员选择模态框
+
     function showUsersModal() {
-        $('#usersModal').css('display', 'block');
+        $('#usersModal').addClass('is-open');
+        setModalOpen(true);
     }
-    // 隐藏人员选择模态框
+
     function hideUsersModal() {
-        $('#usersModal').css('display', 'none');
+        $('#usersModal').removeClass('is-open');
+        setModalOpen(false);
     }
     // 获取人员列表的函数
     function fetchUsers() {
@@ -343,17 +367,12 @@
     $(document).ready(function() {
         fetchPrizes();
         fetchUsers();
-    });
-    // 显示奖品选择模态框
-    $(document).ready(function() {
-        $('#activityForm').on('click', 'button圈选奖品', function() {
-            showPrizesModal();
-        });
-    });
-    // 显示人员选择模态框
-    $(document).ready(function() {
-        $('#activityForm').on('click', 'button圈选人员', function() {
-            showUsersModal();
+
+        $('.cyber-modal').on('click', function(e) {
+            if (e.target === this) {
+                $(this).removeClass('is-open');
+                setModalOpen(false);
+            }
         });
     });
 </script>

@@ -1,6 +1,9 @@
 spring:
+  output:
+    ansi:
+      enabled: always  # Windows / IDE 终端强制启用 ANSI 彩色
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/lottery_system?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://127.0.0.1:3306/neon_draw?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
     username: root
     password: 247711
   rabbitmq:

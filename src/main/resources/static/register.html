@@ -50,8 +50,10 @@
 
         var params = new URLSearchParams(window.location.search);
         var admin = params.get('admin');
-        var jumpList = params.get('jumpList');
-        if (admin === 'false') {
+        // 后台 iframe 内注册用户一律视为普通用户
+        var inAdminFrame = window.self !== window.top;
+        var isNormalRegister = admin === 'false' || inAdminFrame;
+        if (isNormalRegister) {
             $('#password').closest('div.form-group').css('display', 'none');
         }
 
@@ -64,8 +66,8 @@
                 },
                 phoneNumber: "required",
                 password: {
-                    required: true,
-                    minlength: 6
+                    required: !isNormalRegister,
+                    minlength: !isNormalRegister ? 6 : false
                 }
             },
             messages: {
@@ -83,28 +85,52 @@
                     mail: $('#mail').val(),
                     phoneNumber: $('#phoneNumber').val(),
                     password: $('#password').val(),
-                    identity: (admin == null || admin === 'true') ? "ADMIN" : "NORMAL"
+                    identity: isNormalRegister ? "NORMAL" : "ADMIN"
                 };
 
                 $.ajax({
                     url: '/user/register',
                     type: 'post',
                     contentType: 'application/json',
+                    headers: (function () {
+                        var headers = {};
+                        var token = localStorage.getItem('user_token');
+                        if (token) {
+                            headers['user_token'] = token;
+                        }
+                        return headers;
+                    })(),
                     data: JSON.stringify(formData),
                     success: function (result) {
                         if (result.code != 200) {
-                            alert("注册失败！" + result.message);
-                        } else {
-                            if (jumpList == "true") {
+                            alert("注册失败！" + (result.message || result.msg || ''));
+                            return;
+                        }
+                        if (isNormalRegister) {
+                            alert("注册成功！");
+                            form.reset();
+                            if (inAdminFrame) {
                                 window.parent.postMessage({
                                     from: 'user-list.html',
                                     id: '#userList'
                                 }, '*');
+                            }
+                            return;
+                        }
+                        alert("注册成功！请前往登录页面登录。");
+                        location.assign("blogin.html");
+                    },
+                    error: function (xhr) {
+                        if (xhr && xhr.status === 401) {
+                            alert("登录已失效，请重新登录管理员账号");
+                            if (inAdminFrame) {
+                                window.parent.location.href = "/blogin.html";
                             } else {
-                                alert("注册成功！请前往登录页面登录。");
                                 location.assign("blogin.html");
                             }
+                            return;
                         }
+                        alert("注册失败，请稍后重试");
                     }
                 });
                 return false;

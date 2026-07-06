@@ -12,6 +12,7 @@ import com.emrys.lotterysystem.controller.param.UserVarificationLoginParam;
 import com.emrys.lotterysystem.dao.dataobject.Encrypt;
 import com.emrys.lotterysystem.dao.dataobject.UserDO;
 import com.emrys.lotterysystem.dao.mapper.UserMapper;
+import com.emrys.lotterysystem.service.GroupService;
 import com.emrys.lotterysystem.service.UserService;
 import com.emrys.lotterysystem.service.VarificationCodeService;
 import com.emrys.lotterysystem.service.dto.UserDTO;
@@ -39,13 +40,15 @@ public class UserServiceImpl implements UserService {
     UserMapper userMapper;
     @Autowired
     VarificationCodeService varificationCodeService;
+    @Autowired
+    GroupService groupService;
     /**
      * 注册
      * @param param
      * @return
      */
     @Override
-    public UserRegisterDTO register(UserRegisterParam param) {
+    public UserRegisterDTO register(UserRegisterParam param, String token) {
         //校验参数信息
         checkRegisterInfo(param);
         //构造dao层数据类 对敏感信息进行加密
@@ -54,6 +57,13 @@ public class UserServiceImpl implements UserService {
         userDO.setEmail(param.getMail());
         userDO.setPhoneNumber(new Encrypt(param.getPhoneNumber()));
         userDO.setIdentity(param.getIdentity());
+        if (UserIdentityEnum.ADMIN.name().equalsIgnoreCase(param.getIdentity())) {
+            userDO.setAdminId(null);
+        } else if (UserIdentityEnum.NORMAL.name().equalsIgnoreCase(param.getIdentity())) {
+            userDO.setAdminId(JWTUtil.getAdminId(token));
+        } else {
+            throw new ServiceException(ServiceErrorCodeConstants.IDENTITY_ERROR);
+        }
         if(StringUtils.hasText(param.getPassword())){
             userDO.setPassword(MD5Util.setAndGetSecret(param.getPassword()));
         }
@@ -63,6 +73,9 @@ public class UserServiceImpl implements UserService {
         if(!(ret > 0)){
             log.warn("注册失败，数据库插入失败，param={}", param);
             return null;
+        }
+        if (UserIdentityEnum.NORMAL.name().equalsIgnoreCase(param.getIdentity()) && param.getGroupId() != null) {//能够匹配
+            groupService.addUserToGroupMember(userDO.getAdminId(), param.getGroupId(), userDO.getId());
         }
         UserRegisterDTO userRegisterDTO = new UserRegisterDTO();//这个是控制和服务之间交互的数据封装
         userRegisterDTO.setUserId(userDO.getId());
@@ -186,20 +199,14 @@ public class UserServiceImpl implements UserService {
         if(param == null){
             throw new ServiceException(ServiceErrorCodeConstants.REGISTER_INFO_IS_EMPTY);
         }
-        //校验邮箱  邮箱必须是唯一的 xxx@xx.XXX
+        // 校验邮箱格式
         if(!RegexUtil.checkMail(param.getMail())){
             throw new ServiceException(ServiceErrorCodeConstants.MAIL_ERROR);
         }
-        if(mailHasBennUsed(param.getMail())){
-            throw new ServiceException(ServiceErrorCodeConstants.MAIL_HAS_BEEN_USED);
-        }
 
-        //校验手机号  手机号有固定格式   手机号必须是唯一的
+        // 校验手机号格式
         if(!RegexUtil.checkMobile(param.getPhoneNumber())){
             throw new ServiceException(ServiceErrorCodeConstants.PHONE_NUMBER_ERROR);
-        }
-        if(phoneNumberHasBennUsed(param.getPhoneNumber())){
-            throw new ServiceException(ServiceErrorCodeConstants.PHONE_NUMBER_HAS_BEEN_USED);
         }
         //校验管理员密码, 密码格式大于8位
         if (param.getIdentity().equalsIgnoreCase(UserIdentityEnum.ADMIN.name())) { //忽略大小写
@@ -216,36 +223,4 @@ public class UserServiceImpl implements UserService {
         }
 
     }
-
-    /**
-     * 手机号是否已经被注册了
-     * @param phoneNumber
-     * @return
-     */
-    private boolean phoneNumberHasBennUsed( String phoneNumber) {
-        int ret = userMapper.countByPhoneNumber(new Encrypt(phoneNumber));
-        return ret > 0;
-    }
-
-    /**
-     * 邮箱是否已经被注册了
-     * @param mail
-     * @return
-     */
-    private boolean mailHasBennUsed(String mail) {
-        int ret = userMapper.countByMail(mail);
-        return ret > 0;
-    }
-
-    /**
-     * 用户名是否已经被注册了
-     * @param name
-     * @return
-     */
-//    private boolean nameHasBennUsed(String name) {
-//        int ret = userMapper.countByName(name);
-//        return ret > 0;
-//    }
-
-
 }

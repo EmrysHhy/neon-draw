@@ -19,8 +19,11 @@ public class UserRegisterParam implements Serializable {
     private String mail;//邮箱
     @NotBlank(message = "手机号不能为空")
     private String phoneNumber;//手机号2
+    private Long identityId;
     @ToString.Exclude
     private String password;//密码
     @NotBlank(message = "身份信息不能为空")
     private String identity;//身份信息
+    /** 可选：注册完成后加入的小组 id（group.id） */
+    private Long groupId;
 }

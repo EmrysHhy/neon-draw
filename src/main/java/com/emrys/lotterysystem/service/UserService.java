@@ -20,8 +20,11 @@ import java.util.List;
 public interface UserService {
     /**
      * 注册用户
+     *
+     * @param param 注册参数
+     * @param token 请求头中的 JWT，注册普通用户时用于解析所属管理员 id
      */
-    UserRegisterDTO register(UserRegisterParam param);
+    UserRegisterDTO register(UserRegisterParam param, String token);
 
     /**
      * 密码登录。
