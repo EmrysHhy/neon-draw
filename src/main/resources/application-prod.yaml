@@ -1,3 +1,6 @@
+server:
+  port: 8081  # 8080 已被其他 Spring Boot 应用占用
+
 spring:
   ##数据库 ##
   datasource:
@@ -29,15 +32,13 @@ spring:
           min-idle: 0
           # 连接用完时，新的请求等待时间，超过该时间抛出异常 JedisConnectionException（默认-1，负值表示没有限制）
           max-wait: 5s
-##日志配置
+## 日志配置（配合 logback-spring.xml，prod 环境写入文件）
 logging:
   file:
-    name: neon-draw.log # 设置日志文件名
-  logback:
-    rollingpolicy:
-      max-file-size: 10MB # 单个日志文件最大 10MB，达到后会触发滚动
-      total-size-cap: 100MB # 所有日志文件总大小上限 100MB，超出则舍弃旧日志
-      max-history: 7 # 日志保留天数
+    path: /root/emrys/java/neon-draw/logs  # 日志根目录，自动创建 error/ 与 info/ 子目录
+  level:
+    root: info
+    com.emrys: info
 
 # 生产环境上传路径
 pic:

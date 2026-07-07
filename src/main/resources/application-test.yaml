@@ -28,5 +28,8 @@ spring:
           # 连接用完时，新的请求等待时间，超过该时间抛出异常 JedisConnectionException（默认-1，负值表示没有限制）
           max-wait: 5s
 logging:
+  file:
+    path: /root/emrys/java/neon-draw/logs
   level:
+    root: info
     com.emrys: info
