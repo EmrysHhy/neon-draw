@@ -17,9 +17,9 @@
 
     <springProfile name="prod,test">
         <!--ERROR级别的日志放在logErrorDir目录下，INFO级别的日志放在logInfoDir目录下-->
-        <property name="logback.logErrorDir" value="/root/emrys/java/lottery-system/logs/error"/>
-        <property name="logback.logInfoDir" value="/root/emrys/java/lottery-system/logs/info"/>
-        <property name="logback.appName" value="lotterySystem"/>
+        <property name="logback.logErrorDir" value="/root/emrys/java/neon-draw/logs/error"/>
+        <property name="logback.logInfoDir" value="/root/emrys/java/neon-draw/logs/info"/>
+        <property name="logback.appName" value="neonDraw"/>
         <contextName>${logback.appName}</contextName>
 
         <!--ERROR级别的日志配置如下-->
@@ -59,7 +59,7 @@
             -->
             <File>${logback.logInfoDir}/info.log</File>
             <!--自定义过滤器，保证info.***.log中只打印INFO级别的日志, 填写全限定路径-->
-            <filter class="com.example.lotterysystem.common.filter.InfoLevelFilter"/>
+            <filter class="com.emrys.neondraw.common.filter.InfoLevelFilter"/>
             <!--滚动策略，按照时间滚动 TimeBasedRollingPolicy-->
             <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
                 <!--文件路径,定义了日志的切分方式——把每一天的日志归档到一个文件中,以防止日志填满整个磁盘空间-->

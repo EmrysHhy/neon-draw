@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.emrys.lotterysystem.dao.mapper.PrizeMapper">
+<mapper namespace="com.emrys.neondraw.dao.mapper.PrizeMapper">
 
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
@@ -16,14 +16,14 @@
         select count(*) from prize where admin_id = #{adminId}
     </select>
 
-    <select id="selectPrizeListByAdminId" resultType="com.emrys.lotterysystem.dao.dataobject.PrizeDO">
+    <select id="selectPrizeListByAdminId" resultType="com.emrys.neondraw.dao.dataobject.PrizeDO">
         select * from prize
         where admin_id = #{adminId}
         order by id desc
         limit #{offset}, #{pageSize}
     </select>
 
-    <select id="selectAllPrizeListByAdminId" resultType="com.emrys.lotterysystem.dao.dataobject.PrizeDO">
+    <select id="selectAllPrizeListByAdminId" resultType="com.emrys.neondraw.dao.dataobject.PrizeDO">
         select * from prize
         where admin_id = #{adminId}
         order by id desc
@@ -46,7 +46,7 @@
         </foreach>
     </select>
 
-    <select id="getPrizeListByIds" resultType="com.emrys.lotterysystem.dao.dataobject.PrizeDO">
+    <select id="getPrizeListByIds" resultType="com.emrys.neondraw.dao.dataobject.PrizeDO">
         select * from prize
         where id in
         <foreach collection="ids" item="id" open="(" separator="," close=")">

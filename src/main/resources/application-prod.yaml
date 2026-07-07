@@ -1,7 +1,7 @@
 spring:
   ##数据库 ##
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/lottery_system?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://127.0.0.1:3306/neon_draw?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
     username: root
     password: 'Hhyxyx.21'
   ## mq ##
@@ -10,7 +10,7 @@ spring:
     port: 5672
     username: admin
     password: admin
-    virtual-host: lottery-system
+    virtual-host: neon-draw
   ## redis ##
   data:
     redis:
@@ -32,7 +32,7 @@ spring:
 ##日志配置
 logging:
   file:
-    name: lottery_system.log # 设置日志文件名
+    name: neon-draw.log # 设置日志文件名
   logback:
     rollingpolicy:
       max-file-size: 10MB # 单个日志文件最大 10MB，达到后会触发滚动
@@ -41,4 +41,4 @@ logging:
 
 # 生产环境上传路径
 pic:
-  local-path: /root/emrys/java/lottery-system/upload/
+  local-path: /root/emrys/java/neon-draw/upload/

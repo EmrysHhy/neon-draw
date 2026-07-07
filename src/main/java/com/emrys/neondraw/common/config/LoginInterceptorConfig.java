@@ -1,0 +1,43 @@
+package com.emrys.neondraw.common.config;
+
+import com.emrys.neondraw.common.interceptor.LoginInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.List;
+
+/**
+ *
+ * @author Emrys
+ * content:
+ */
+@Configuration
+public class LoginInterceptorConfig implements WebMvcConfigurer {
+    @Autowired
+    LoginInterceptor loginInterceptor;
+    private final List<String> excludePaths = List.of(
+            "/**/*.html",
+            "/css/**",
+            "/js/**",
+            "/pic/**",
+            "/*.jpg",
+            "/*.png",
+            "/favicon.ico",
+            // 管理员注册与登录（无需 token）
+            "/admin/register",
+            "/admin/password/login",
+            "/admin/varification/login",
+            "/admin/varification-code/send",
+            // 成员注册（token 由业务层校验）
+            "/member/register",
+            // 抽奖页公开接口
+            "/winning-records/show");
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(loginInterceptor)
+                .addPathPatterns("/**") // 拦截所有请
+                .excludePathPatterns(excludePaths); // 排除登录和注册请求
+    }
+}

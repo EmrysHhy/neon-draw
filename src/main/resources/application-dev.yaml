@@ -11,7 +11,7 @@ spring:
     port: 5672
     username: admin
     password: admin
-    virtual-host: lottery-system
+    virtual-host: neon-draw
   ## redis ##
   data:
     redis:
@@ -39,4 +39,4 @@ logging:
     com.emrys: debug
 # 自定义上传路径（末尾 / 不可省略）
 pic:
-  local-path: D:/code/JAVA/project/lottery-system/upload/
+  local-path: D:/code/JAVA/project/neon-draw/upload/

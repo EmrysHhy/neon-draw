@@ -1,0 +1,258 @@
+package com.emrys.neondraw.controller.convert;
+
+import com.emrys.neondraw.common.errorcode.ControllerErrorCodeConstants;
+import com.emrys.neondraw.common.exception.ControllerException;
+import com.emrys.neondraw.controller.result.*;
+import com.emrys.neondraw.dao.dataobject.WinningRecordDO;
+import com.emrys.neondraw.service.dto.*;
+import com.emrys.neondraw.service.enums.PrizeTierEnum;
+import lombok.extern.slf4j.Slf4j;
+
+import java.text.SimpleDateFormat;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+
+@Slf4j
+public class ControllerConverter {
+    /**
+     * 将 UserDTO 列表转换为 BaseUserInfoResult 列表
+     */
+    public static List<BaseUserInfoResult> convertToBaseUserInfoResultList(List<UserDTO> userDTOS) {
+        if(userDTOS == null){
+            return List.of();
+        }
+        return userDTOS.stream().filter(Objects::nonNull).map(userDTO -> {
+            BaseUserInfoResult baseUserInfoResult = new BaseUserInfoResult();
+            baseUserInfoResult.setUserId(userDTO.getUserId());
+            baseUserInfoResult.setUserName(userDTO.getUserName());
+            baseUserInfoResult.setIdentity(userDTO.getIdentity() != null ? userDTO.getIdentity().name() : "NORMAL");
+            baseUserInfoResult.setGroupId(userDTO.getGroupId());
+            baseUserInfoResult.setGroupName(userDTO.getGroupName());
+            return baseUserInfoResult;
+        }).toList();
+    }
+
+    /**
+     * 将 UserLoginDTO 转换为 UserLoginResult
+     */
+    public static UserLoginResult convertToUserLoginResult(UserLoginDTO userLoginDTO) {
+        UserLoginResult userLoginResult = new UserLoginResult();
+        if(userLoginDTO == null){
+            log.error("user login failed, userLoginDTO is null");
+            throw new ControllerException(ControllerErrorCodeConstants.LOGIN_ERROR);
+        }
+        userLoginResult.setToken(userLoginDTO.getToken());
+        userLoginResult.setIdentity(userLoginDTO.getMandatoryIdentity().name());
+        return userLoginResult;
+    }
+    /**
+     * 将 UserRegisterDTO 转换为 UserRegisterResult
+     */
+    public static UserRegisterResult convertToUserRegisterResult(UserRegisterDTO userRegisterDTO) {
+        UserRegisterResult userRegisterResult = new UserRegisterResult();
+        if(userRegisterDTO == null){
+            log.error("user register failed, userRegisterDTO is null");
+            throw new ControllerException(ControllerErrorCodeConstants.REGISTER_ERROR);
+        }
+        userRegisterResult.setUserId(userRegisterDTO.getUserId());
+        return userRegisterResult;
+    }
+
+    public static List<GroupResult> convertToGroupResultList(List<GroupDTO> list) {
+        if (list == null) {
+            return List.of();
+        }
+        return list.stream().filter(Objects::nonNull).map(dto -> {
+            GroupResult result = new GroupResult();
+            result.setGroupId(dto.getGroupId());
+            result.setName(dto.getName());
+            result.setDescription(dto.getDescription());
+            result.setMemberCount(dto.getMemberCount());
+            result.setUserIds(dto.getUserIds());
+            return result;
+        }).toList();
+    }
+
+    /**
+     * 将 PageListDTO<PrizeDTO> 转换为 FindPrizeListResult
+     */
+    public static FindPrizeListResult convertToFindPrizeListResult(PageListDTO<PrizeDTO> pageListDTO) {
+        FindPrizeListResult findPrizeListResult = new FindPrizeListResult();
+        if(pageListDTO == null) {
+            log.error("find prize list failed, pageListDTO is null");
+            throw new ControllerException(ControllerErrorCodeConstants.FIND_PRIZE_LIST_ERROR);
+        }
+
+        findPrizeListResult.setTotal(pageListDTO.getTotal());
+        List<PrizeDTO> prizeDTOS = pageListDTO.getRecords();
+        if (prizeDTOS != null) {
+            findPrizeListResult.setRecords(
+                    prizeDTOS.stream()
+                            .filter(Objects::nonNull)
+                            .map(prizeDTO -> {
+                FindPrizeListResult.PrizeInfo prizeInfo = new FindPrizeListResult.PrizeInfo();
+                prizeInfo.setPrizeId(prizeDTO.getPrizeId());
+                prizeInfo.setPrizeName(prizeDTO.getPrizeName());
+                prizeInfo.setDescription(prizeDTO.getDescription());
+                prizeInfo.setPrice(prizeDTO.getPrice());
+                prizeInfo.setImageUrl(prizeDTO.getImageUrl());
+                return prizeInfo;
+            }).toList());
+        }
+        return findPrizeListResult;
+    }
+
+    /**
+     * 将 CreateActivityDTO 转换为 CreateActivityResult
+
+     */
+    public static createActivityResult convertToCreateActivityResult(CreateActivityDTO activityDTO) {
+        if(activityDTO == null) {
+            log.error("create activity failed, activityDTO is null");
+            throw new ControllerException(ControllerErrorCodeConstants.CREATE_ACTIVITY_ERROR);
+        }
+        createActivityResult result = new createActivityResult();
+        result.setActivityId(activityDTO.getActivityId());
+        return result;
+    }
+
+    public static FindActivityListResult convertToFindActivityListResult(PageListDTO<ActivityDTO> activityDTOList) {
+        if(activityDTOList == null) {
+            log.info("find activity list failed, activityDTOList is null");
+            return null;
+        }
+        FindActivityListResult result = new FindActivityListResult();
+        result.setTotal(activityDTOList.getTotal());
+        List<ActivityDTO> activityDTOS = activityDTOList.getRecords();
+        result.setRecords(
+                activityDTOS.stream()
+                        .filter(Objects::nonNull)
+                        .map(activityDTO -> {
+            FindActivityListResult.ActivityInfo activityInfo = new FindActivityListResult.ActivityInfo();
+            activityInfo.setActivityId(activityDTO.getActivityId());
+            activityInfo.setActivityName(activityDTO.getActivityName());
+            activityInfo.setDescription(activityDTO.getDescription());
+            activityInfo.setValid(activityDTO.valid());
+            return activityInfo;
+        }).toList());
+        return result;
+    }
+
+    public static ActivityDetailResult convertToActivityDetailResult(ActivityDetailDTO activityDetailDTO) {
+        if (activityDetailDTO == null || activityDetailDTO.getActivityId() == null) {
+            log.error("find activity detail failed, activityDetailDTO is null");
+            throw new ControllerException(ControllerErrorCodeConstants.FIND_ACTIVITY_DETAIL_ERROR);
+        }
+        ActivityDetailResult result = new ActivityDetailResult();
+        result.setActivityId(activityDetailDTO.getActivityId());
+        result.setActivityName(activityDetailDTO.getActivityName());
+        result.setDesc(activityDetailDTO.getDesc());
+        result.setValid(activityDetailDTO.validActivity());
+
+        List<ActivityDetailDTO.PrizeDetail> prizeList = activityDetailDTO.getPrizeList();
+        if (prizeList != null) {
+            result.setPrizes(prizeList.stream()
+                    .filter(Objects::nonNull)
+                    .sorted(Comparator.comparingInt(ControllerConverter::getPrizeTierCode))
+                    .map(prize -> {
+                        ActivityDetailResult.PrizeDetail prizeDetail = new ActivityDetailResult.PrizeDetail();
+                        prizeDetail.setPrizeId(prize.getPrizeId());
+                        prizeDetail.setName(prize.getPrizeName());
+                        prizeDetail.setPrizeTierName(resolvePrizeTierMessage(prize));
+                        prizeDetail.setImageUrl(prize.getImageUrl());
+                        prizeDetail.setPrizeAmount(prize.getPrizeAmount());
+                        prizeDetail.setValid(prize.validPrize());
+                        return prizeDetail;
+                    }).toList());
+        }
+
+        List<ActivityDetailDTO.UserDetail> userList = activityDetailDTO.getUserList();
+        if (userList != null) {
+            result.setUsers(userList.stream()
+                    .filter(Objects::nonNull)
+                    .map(user -> {
+                        ActivityDetailResult.UserDetail userDetail = new ActivityDetailResult.UserDetail();
+                        userDetail.setUserId(user.getUserId());
+                        userDetail.setUserName(user.getUserName());
+                        userDetail.setValid(user.validUser());
+                        return userDetail;
+                    }).toList());
+        }
+        return result;
+    }
+
+    private static int getPrizeTierCode(ActivityDetailDTO.PrizeDetail prize) {
+        if (prize == null || prize.getTiers() == null || prize.getTiers().getCode() == null) {
+            return Integer.MAX_VALUE;
+        }
+        return prize.getTiers().getCode();
+    }
+
+    private static String resolvePrizeTierMessage(ActivityDetailDTO.PrizeDetail prize) {
+        if (prize == null) {
+            return null;
+        }
+        if (prize.getPrizeTierName() != null) {
+            return prize.getPrizeTierName();
+        }
+        if (prize.getTiers() != null && prize.getTiers().getMessage() != null) {
+            return prize.getTiers().getMessage();
+        }
+        return null;
+    }
+
+    /**
+     * 将 WinningRecordDO 转换为 SendWinnerEmailResult
+     */
+    public static SendWinnerEmailResult convertToSendWinnerEmailResult(WinningRecordDO record) {
+        if (record == null) {
+            return null;
+        }
+        SendWinnerEmailResult result = new SendWinnerEmailResult();
+        result.setTo(record.getWinnerEmail());
+        result.setWinnerName(record.getWinnerName());
+        result.setActivityName(record.getActivityName());
+        result.setPrizeName(record.getPrizeName());
+        result.setPrizeTierMessage(resolvePrizeTierMessage(record.getPrizeTier()));
+        if (record.getWinningTime() != null) {
+            result.setWinningTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(record.getWinningTime()));
+        }
+        return result;
+    }
+
+    private static String resolvePrizeTierMessage(String prizeTier) {
+        PrizeTierEnum tier = PrizeTierEnum.forName(prizeTier);
+        return tier != null ? tier.getMessage() : prizeTier;
+    }
+
+    /**
+     * 将 ShowWinningRecordsDTO 列表转换为 ShowWinningResult 列表（按等级升序，同等级按中奖时间）
+     */
+    public static List<ShowWinningResult> convertToShowWinningResultList(List<ShowWinningRecordsDTO> showWinningRecordsDTO) {
+        if (showWinningRecordsDTO == null) {
+            return List.of();
+        }
+        return showWinningRecordsDTO
+                .stream()
+                .filter(Objects::nonNull)
+                .sorted(Comparator
+                        .comparingInt((ShowWinningRecordsDTO dto) -> tierSortCode(dto.getPrizeTier()))
+                        .thenComparing(ShowWinningRecordsDTO::getWinningTime, Comparator.nullsLast(Comparator.naturalOrder())))
+                .map(dto -> {
+            ShowWinningResult result = new ShowWinningResult();
+            result.setWinnerId(dto.getWinnerId());
+            result.setWinnerName(dto.getWinnerName());
+            result.setPrizeName(dto.getPrizeName());
+            PrizeTierEnum tier = dto.getPrizeTier();
+            result.setPrizeTier(tier != null ? tier.getMessage() : null);
+            result.setWinningTime(dto.getWinningTime());
+            return result;
+        }).toList();
+
+    }
+
+    private static int tierSortCode(PrizeTierEnum tier) {
+        return tier != null ? tier.sortCode() : Integer.MAX_VALUE;
+    }
+}

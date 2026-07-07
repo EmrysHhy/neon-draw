@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.emrys</groupId>
-    <artifactId>lottery-system</artifactId>
+    <artifactId>neon-draw</artifactId>
     <version>0.0.1</version>
-    <name>lottery-system</name>
-    <description>lottery-system</description>
+    <name>neon-draw</name>
+    <description>neon-draw</description>
     <url/>
     <licenses>
         <license/>

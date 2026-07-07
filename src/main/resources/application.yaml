@@ -1,6 +1,6 @@
 spring:
   application:
-    name: lottery-system
+    name: neon-draw
   profiles:
     active: dev
   datasource:
@@ -47,7 +47,7 @@ mybatis:
   mapper-locations: classpath:mapper/*.xml
   configuration:
     map-underscore-to-camel-case: true  # 将数据库中的下划线命名转换为驼峰命名
-  type-handlers-package: com.emrys.lotterysystem.dao.handle  # 指定自定义类型处理器的包路径
+  type-handlers-package: com.emrys.neondraw.dao.handle  # 指定自定义类型处理器的包路径
 
 logging:
   config: classpath:logback-spring.xml
@@ -60,5 +60,5 @@ async:
       max_pool_size: 10        # 最大线程数
       queue_capacity: 100      # 任务队列容量
       name:
-        prefix: lottery-async- # 线程名前缀，便于日志排查
+        prefix: neon-draw-async- # 线程名前缀，便于日志排查
 
