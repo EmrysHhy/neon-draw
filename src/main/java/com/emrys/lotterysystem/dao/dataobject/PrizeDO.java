@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class PrizeDO extends BaseDO {
+    private Long adminId;
     private String name;
     private String description;
     private BigDecimal price;

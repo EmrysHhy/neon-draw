@@ -29,18 +29,13 @@
             height: 48px;
         }
         .pre-btn { margin-right: 20px; }
-        #prizesContainer,
-        #usersContainer {
+        #prizesContainer {
             max-height: 360px;
             margin-bottom: 24px;
             overflow-y: auto;
-            padding: 0 8px;
-        }
-        #prizesContainer {
             padding: 0 12px;
         }
-        .prize-item,
-        .user-item {
+        .prize-item {
             display: flex;
             align-items: center;
             margin-bottom: 10px;
@@ -52,12 +47,10 @@
             margin-right: 90px;
             color: var(--text-secondary);
         }
-        .prize-item input[type="checkbox"],
-        .user-item input[type="checkbox"] {
+        .prize-item input[type="checkbox"] {
             margin-right: 99px;
         }
-        .prize-item label,
-        .user-item label {
+        .prize-item label {
             margin-right: 11px;
             margin-bottom: 0;
             width: 200px;
@@ -69,6 +62,91 @@
             height: 36px;
             line-height: 36px;
             margin-right: 56px;
+        }
+        .select-users-toolbar {
+            margin-bottom: 12px;
+        }
+        .select-users-toolbar label {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+        .select-users-toolbar select {
+            width: 100%;
+        }
+        .select-users-stats {
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 12px;
+        }
+        .select-users-stats span {
+            color: var(--neon-cyan, #00f5ff);
+        }
+        .select-users-list-wrap {
+            border: 1px solid rgba(0, 245, 255, 0.12);
+            border-radius: var(--radius-md, 8px);
+            background: rgba(0, 0, 0, 0.15);
+            margin-bottom: 24px;
+        }
+        .select-users-list-header {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(0, 245, 255, 0.1);
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .select-users-list-header .col-check {
+            width: 72px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        .select-users-list-header .col-name {
+            flex: 1;
+        }
+        #usersContainer {
+            max-height: 320px;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+        .select-users-list-wrap .user-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            border-bottom: 1px solid rgba(0, 245, 255, 0.06);
+            margin-bottom: 0;
+            justify-content: flex-start;
+        }
+        .select-users-list-wrap .user-item:last-child {
+            border-bottom: none;
+        }
+        .select-users-list-wrap .user-item .col-check {
+            width: 72px;
+        }
+        .select-users-list-wrap .user-item .col-check input[type="checkbox"] {
+            margin: 0;
+        }
+        .select-users-list-wrap .user-item .col-name {
+            flex: 1;
+            color: var(--text-primary);
+            margin: 0;
+        }
+        .user-item-empty,
+        .user-item-loading {
+            padding: 24px 16px;
+            text-align: center;
+            color: var(--text-muted, #888);
+            font-size: 14px;
+        }
+        #usersModal .modal-content {
+            max-width: 560px;
+            width: 92%;
         }
     </style>
 </head>
@@ -115,9 +193,28 @@
 <!-- 人员选择模态框 -->
 <div id="usersModal" class="cyber-modal">
     <div class="modal-content">
-        <h2>人员列表<span class="close"  onclick="hideUsersModal()">&times;</span></h2>
-        <div id="usersContainer">
-            <!-- 奖品列表将动态插入这里 -->
+        <h2>人员列表<span class="close" onclick="hideUsersModal()">&times;</span></h2>
+        <div class="select-users-stats">
+            当前显示 <span id="visibleUserCount">0</span> 人 · 已选 <span id="selectedUserCount">0</span> 人
+        </div>
+        <div class="select-users-toolbar">
+            <label for="groupFilterSelect">筛选范围</label>
+            <select class="form-control" id="groupFilterSelect" onchange="applyGroupFilter()">
+                <option value="all">所有人</option>
+                <option value="none">无分组</option>
+            </select>
+        </div>
+        <div class="select-users-list-wrap">
+            <div class="select-users-list-header">
+                <div class="col-check">
+                    <input type="checkbox" id="selectAllUsers" onchange="toggleSelectAllVisible()">
+                    <span>全选</span>
+                </div>
+                <div class="col-name">姓名</div>
+            </div>
+            <div id="usersContainer">
+                <!-- 人员列表动态插入 -->
+            </div>
         </div>
         <div class="form-btn-box">
             <button type="button" class="btn btn-secondary pre-btn" onclick="hideUsersModal()">取消</button>
@@ -217,8 +314,42 @@
 
     // 初始时人员列表为空, 存放的勾选的人员信息
     var selectedUsers = [];
+    var allUsers = [];
+    var displayUsers = [];
+    var allGroups = [];
+    var selectedUserIds = new Set();
+    var currentFilter = 'all';
+    var usersModalDataLoaded = false;
+
+    function escapeHtml(text) {
+        if (text == null) {
+            return '';
+        }
+        return String(text)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
 
     function showUsersModal() {
+        selectedUserIds.clear();
+        selectedUsers.forEach(function(user) {
+            selectedUserIds.add(Number(user.userId));
+        });
+        openUsersModal();
+    }
+
+    function openUsersModal() {
+        if (!usersModalDataLoaded) {
+            loadUsersModalData(function() {
+                $('#usersModal').addClass('is-open');
+                setModalOpen(true);
+            });
+            return;
+        }
+        buildGroupFilterOptions();
+        applyGroupFilter();
         $('#usersModal').addClass('is-open');
         setModalOpen(true);
     }
@@ -227,57 +358,201 @@
         $('#usersModal').removeClass('is-open');
         setModalOpen(false);
     }
-    // 获取人员列表的函数
-    function fetchUsers() {
+
+    function loadUsersModalData(callback) {
+        $.when(
+            $.ajax({
+                url: '/member/find-list',
+                type: 'GET',
+                headers: { "user_token": userToken }
+            }),
+            $.ajax({
+                url: '/group/find-list',
+                type: 'GET',
+                headers: { "user_token": userToken }
+            })
+        ).done(function(userRes, groupRes) {
+            var userResult = userRes[0];
+            var groupResult = groupRes[0];
+            if (userResult.code != 200) {
+                alert('加载人员列表失败！' + (userResult.message || userResult.msg || ''));
+                return;
+            }
+            if (groupResult.code != 200) {
+                alert('加载分组列表失败！' + (groupResult.message || groupResult.msg || ''));
+                return;
+            }
+            allUsers = userResult.data || [];
+            displayUsers = allUsers.slice();
+            allGroups = groupResult.data || [];
+            usersModalDataLoaded = true;
+            buildGroupFilterOptions();
+            renderUserList();
+            if (callback) {
+                callback();
+            }
+        }).fail(function(err) {
+            console.log(err);
+            if (err != null && err.status == 401) {
+                alert("用户未登录, 即将跳转到登录页!");
+                window.location.href = "/blogin.html";
+                window.parent.location.href = "/blogin.html";
+            } else {
+                alert('加载人员数据失败！');
+            }
+        });
+    }
+
+    function buildGroupFilterOptions() {
+        var select = $('#groupFilterSelect');
+        select.find('option:not([value="all"]):not([value="none"])').remove();
+        allGroups.forEach(function(group) {
+            var label = group.name || ('小组' + group.groupId);
+            select.append(
+                $('<option></option>').val(String(group.groupId)).text(label)
+            );
+        });
+        if (select.find('option[value="' + currentFilter + '"]').length > 0) {
+            select.val(currentFilter);
+        } else {
+            currentFilter = 'all';
+            select.val('all');
+        }
+    }
+
+    function showLoadingUsers() {
+        $('#usersContainer').html('<div class="user-item-loading">加载中...</div>');
+    }
+
+    function applyGroupFilter() {
+        currentFilter = String($('#groupFilterSelect').val());
+        var requestData = {};
+        if (currentFilter === 'none') {
+            requestData.filter = 'none';
+        } else if (currentFilter !== 'all') {
+            requestData.groupId = currentFilter;
+        }
+        showLoadingUsers();
         $.ajax({
-            url: 'user/base-user/find-list',
+            url: '/member/find-list',
             type: 'GET',
-            dataType: 'json',
-            data: { identity: 'NORMAL' },
-            headers: {
-                // jwt
-                "user_token": userToken
-            },
+            data: requestData,
+            headers: { "user_token": userToken },
             success: function(result) {
-                var users = result.data;
-                var usersContainer = $('#usersContainer');
-                usersContainer.empty(); // 清空当前人员列表
-                users.forEach(function(user) {
-                    console.info(user);
-                    usersContainer.append(
-                        $('<div class="user-item">').append(`
-                            <input type="checkbox" id="user-${user.userId}" name="user-${user.userId}" value="${user.userId}">
-                            <label for="user-${user.userId}">${user.userName}</label>
-                        `)
-                    );
-                });
+                if (result.code != 200) {
+                    alert('加载人员失败！' + (result.message || result.msg || ''));
+                    return;
+                }
+                displayUsers = result.data || [];
+                if (currentFilter === 'all') {
+                    allUsers = displayUsers.slice();
+                }
+                renderUserList();
             },
-            error:function(err){
+            error: function(err) {
                 console.log(err);
-                if(err!=null && err.status==401){
+                if (err != null && err.status == 401) {
                     alert("用户未登录, 即将跳转到登录页!");
-                    // 跳转登录页
                     window.location.href = "/blogin.html";
-                    window.parent.location.href = "/blogin.html";//让父页面一起跳转
+                    window.parent.location.href = "/blogin.html";
                 }
             }
         });
     }
+
+    function renderUserList() {
+        var users = displayUsers;
+        var container = $('#usersContainer');
+        container.empty();
+        updateUserFilterStats();
+        if (users.length === 0) {
+            container.append('<div class="user-item-empty">当前范围下暂无人员</div>');
+            syncSelectAllCheckbox();
+            return;
+        }
+        users.forEach(function(user) {
+            var uid = Number(user.userId);
+            var checked = selectedUserIds.has(uid) ? 'checked' : '';
+            container.append(
+                '<div class="user-item">' +
+                '<div class="col-check">' +
+                '<input type="checkbox" id="activity-user-' + uid + '" value="' + uid + '" ' + checked +
+                ' onchange="onUserCheckChange(' + uid + ', this.checked)">' +
+                '</div>' +
+                '<label class="col-name" for="activity-user-' + uid + '">' + escapeHtml(user.userName) + '</label>' +
+                '</div>'
+            );
+        });
+        syncSelectAllCheckbox();
+    }
+
+    function onUserCheckChange(userId, checked) {
+        if (checked) {
+            selectedUserIds.add(Number(userId));
+        } else {
+            selectedUserIds.delete(Number(userId));
+        }
+        updateUserFilterStats();
+        syncSelectAllCheckbox();
+    }
+
+    function toggleSelectAllVisible() {
+        var selectAll = $('#selectAllUsers').prop('checked');
+        displayUsers.forEach(function(user) {
+            var uid = Number(user.userId);
+            if (selectAll) {
+                selectedUserIds.add(uid);
+            } else {
+                selectedUserIds.delete(uid);
+            }
+        });
+        renderUserList();
+    }
+
+    function syncSelectAllCheckbox() {
+        var users = displayUsers;
+        var selectAllEl = document.getElementById('selectAllUsers');
+        if (!selectAllEl || users.length === 0) {
+            if (selectAllEl) {
+                selectAllEl.checked = false;
+                selectAllEl.indeterminate = false;
+            }
+            return;
+        }
+        var checkedCount = users.filter(function(u) {
+            return selectedUserIds.has(Number(u.userId));
+        }).length;
+        selectAllEl.checked = checkedCount === users.length;
+        selectAllEl.indeterminate = checkedCount > 0 && checkedCount < users.length;
+    }
+
+    function updateUserFilterStats() {
+        $('#visibleUserCount').text(displayUsers.length);
+        $('#selectedUserCount').text(selectedUserIds.size);
+    }
+
+    function findUserNameById(userId) {
+        var matched = allUsers.find(function(user) {
+            return Number(user.userId) === Number(userId);
+        });
+        if (matched) {
+            return matched.userName;
+        }
+        matched = displayUsers.find(function(user) {
+            return Number(user.userId) === Number(userId);
+        });
+        return matched ? matched.userName : '';
+    }
+
     // 提交用户数据的函数
     function submitUsers() {
-        selectedUsers = [];
-        // 将选中的奖品信息存储在selectedUsers
-        $('.user-item input[type="checkbox"]:checked').each(function() {
-            var userId = +$(this).val();
-            var userName = $(this).next('label').text();
-            selectedUsers.push({
+        selectedUsers = Array.from(selectedUserIds).map(function(userId) {
+            return {
                 userId: userId,
-                userName: userName
-            });
+                userName: findUserNameById(userId)
+            };
         });
-        // 关闭模态框
         hideUsersModal();
-        //  修改按钮
         var nextButton = document.getElementById('buttonUsers');
         if (selectedUsers.length > 0) {
             nextButton.textContent = '圈选人员(已选)';
@@ -363,10 +638,9 @@
             }
         });
     }
-    // 获取奖品/人员列表并填充模态框
+    // 获取奖品列表并填充模态框
     $(document).ready(function() {
         fetchPrizes();
-        fetchUsers();
 
         $('.cyber-modal').on('click', function(e) {
             if (e.target === this) {

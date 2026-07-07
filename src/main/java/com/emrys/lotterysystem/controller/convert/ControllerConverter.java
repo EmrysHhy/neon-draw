@@ -27,6 +27,8 @@ public class ControllerConverter {
             baseUserInfoResult.setUserId(userDTO.getUserId());
             baseUserInfoResult.setUserName(userDTO.getUserName());
             baseUserInfoResult.setIdentity(userDTO.getIdentity() != null ? userDTO.getIdentity().name() : "NORMAL");
+            baseUserInfoResult.setGroupId(userDTO.getGroupId());
+            baseUserInfoResult.setGroupName(userDTO.getGroupName());
             return baseUserInfoResult;
         }).toList();
     }
@@ -67,6 +69,7 @@ public class ControllerConverter {
             result.setName(dto.getName());
             result.setDescription(dto.getDescription());
             result.setMemberCount(dto.getMemberCount());
+            result.setUserIds(dto.getUserIds());
             return result;
         }).toList();
     }

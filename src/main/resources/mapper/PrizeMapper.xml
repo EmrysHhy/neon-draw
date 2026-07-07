@@ -6,11 +6,37 @@
 
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        insert into prize (name,image_url,price
+        insert into prize (admin_id, name, image_url, price
         <if test="description != null">,description</if> )
-        values (#{name},#{imageUrl},#{price}
+        values (#{adminId}, #{name}, #{imageUrl}, #{price}
         <if test="description != null">,#{description}</if> )
     </insert>
+
+    <select id="countPrizeByAdminId" resultType="int">
+        select count(*) from prize where admin_id = #{adminId}
+    </select>
+
+    <select id="selectPrizeListByAdminId" resultType="com.emrys.lotterysystem.dao.dataobject.PrizeDO">
+        select * from prize
+        where admin_id = #{adminId}
+        order by id desc
+        limit #{offset}, #{pageSize}
+    </select>
+
+    <select id="selectAllPrizeListByAdminId" resultType="com.emrys.lotterysystem.dao.dataobject.PrizeDO">
+        select * from prize
+        where admin_id = #{adminId}
+        order by id desc
+    </select>
+
+    <select id="countByIdsAndAdminId" resultType="java.lang.Long">
+        select count(*) from prize
+        where admin_id = #{adminId}
+          and id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
 
     <select id="countByIds" resultType="java.lang.Long">
         select count(*) from prize

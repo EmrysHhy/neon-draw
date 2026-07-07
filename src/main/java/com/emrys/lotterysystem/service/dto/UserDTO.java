@@ -15,5 +15,9 @@ public class UserDTO {
     private String email;
     private UserIdentityEnum identity;
     private String phoneNumber;
+    /** 当前所属小组 id，未分组时为 null */
+    private Long groupId;
+    /** 当前所属小组名称，未分组时为 null */
+    private String groupName;
 
 }

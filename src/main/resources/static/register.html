@@ -83,13 +83,14 @@
                 var formData = {
                     name: $('#name').val(),
                     mail: $('#mail').val(),
-                    phoneNumber: $('#phoneNumber').val(),
-                    password: $('#password').val(),
-                    identity: isNormalRegister ? "NORMAL" : "ADMIN"
+                    phoneNumber: $('#phoneNumber').val()
                 };
+                if (!isNormalRegister) {
+                    formData.password = $('#password').val();
+                }
 
                 $.ajax({
-                    url: '/user/register',
+                    url: isNormalRegister ? '/member/register' : '/admin/register',
                     type: 'post',
                     contentType: 'application/json',
                     headers: (function () {

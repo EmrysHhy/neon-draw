@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.emrys.lotterysystem.dao.mapper.NormalUserMapper">
+
+    <sql id="userGroupIdSubQuery">
+        (select min(gm.group_id)
+         from group_member gm
+         inner join `group` g on g.id = gm.group_id
+         where gm.user_id = u.id
+           and g.admin_id = #{adminId}) as group_id
+    </sql>
+
+    <sql id="userGroupNameSubQuery">
+        (select g2.name
+         from group_member gm
+         inner join `group` g2 on g2.id = gm.group_id
+         where gm.user_id = u.id
+           and g2.admin_id = #{adminId}
+         order by gm.group_id asc
+         limit 1) as group_name
+    </sql>
+
+    <select id="selectListByAdminId" resultType="com.emrys.lotterysystem.dao.dataobject.NormalUserDO">
+        select u.*, <include refid="userGroupIdSubQuery"/>, <include refid="userGroupNameSubQuery"/>
+        from normal_user u
+        where u.admin_id = #{adminId}
+        order by u.id desc
+    </select>
+
+    <select id="selectUngroupedListByAdminId" resultType="com.emrys.lotterysystem.dao.dataobject.NormalUserDO">
+        select u.*, null as group_id, null as group_name from normal_user u
+        where u.admin_id = #{adminId}
+          and not exists (
+            select 1 from group_member gm
+            inner join `group` g on g.id = gm.group_id
+            where g.admin_id = #{adminId}
+              and gm.user_id = u.id
+          )
+        order by u.id desc
+    </select>
+
+    <select id="selectListByAdminIdAndGroupId" resultType="com.emrys.lotterysystem.dao.dataobject.NormalUserDO">
+        select u.*, #{groupId} as group_id, g.name as group_name from normal_user u
+        inner join group_member gm on gm.user_id = u.id
+        inner join `group` g on g.id = gm.group_id
+        where g.admin_id = #{adminId}
+          and g.id = #{groupId}
+        order by u.id desc
+    </select>
+
+    <select id="countByIds" resultType="java.lang.Long">
+        select count(*) from normal_user
+        where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="selectByIds" resultType="com.emrys.lotterysystem.dao.dataobject.NormalUserDO">
+        select * from normal_user
+        where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+</mapper>

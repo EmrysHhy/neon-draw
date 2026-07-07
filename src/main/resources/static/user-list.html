@@ -6,78 +6,348 @@
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="./css/base.css">
     <style>
-        .user-table th:first-child, .user-table td:first-child,
-        .user-table th:nth-child(3), .user-table td:nth-child(3) {
-            width: 15%;
+        .user-list-page {
+            width: 100%;
+            height: 100vh;
+            overflow-y: auto;
+            padding: 0 30px 24px;
+            font-family: var(--font-body);
         }
-        .user-table th:nth-child(2), .user-table td:nth-child(2) {
-            width: 25%;
+        .user-list-header {
+            margin-bottom: 20px;
+        }
+        .user-list-header .user-list-desc {
+            margin: 8px 0 0;
+            font-size: 14px;
+            color: var(--text-muted, #888);
+        }
+        .user-list-toolbar {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(0, 245, 255, 0.12);
+            border-radius: var(--radius-md, 8px);
+            background: rgba(0, 0, 0, 0.15);
+        }
+        .toolbar-filter {
+            flex: 1;
+            min-width: 220px;
+            max-width: 360px;
+        }
+        .toolbar-filter label {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+        .toolbar-filter select {
+            width: 100%;
+        }
+        .toolbar-stats {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding-bottom: 2px;
+        }
+        .toolbar-stats .stats-value {
+            color: var(--neon-cyan, #00f5ff);
+            font-weight: 600;
+        }
+        .toolbar-stats .stats-divider {
+            color: rgba(255, 255, 255, 0.25);
+            margin: 0 4px;
+        }
+        .user-list-table-wrap {
+            border: 1px solid rgba(0, 245, 255, 0.12);
+            border-radius: var(--radius-md, 8px);
+            background: rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+        .user-list-table-box {
+            height: calc(100vh - 260px);
+            min-height: 280px;
+            overflow-y: auto;
+        }
+        .user-list-table-wrap .table {
+            table-layout: fixed;
+            width: 100%;
+            margin-bottom: 0;
+        }
+        .user-list-table-wrap .table th,
+        .user-list-table-wrap .table td {
+            text-align: left !important;
+            vertical-align: middle;
+            padding: 12px 20px;
+            border: none;
+        }
+        .user-list-table-wrap .table thead th {
+            background: rgba(8, 8, 22, 0.92);
+            border-bottom: 2px solid rgba(0, 245, 255, 0.45);
+            font-family: var(--font-title);
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--neon-cyan, #00f5ff);
+            letter-spacing: 1px;
+            height: 52px;
+            line-height: 1.2;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+        .user-list-table-wrap .table tbody tr {
+            background: rgba(16, 16, 36, 0.62);
+        }
+        .user-list-table-wrap .table tbody tr:nth-child(even) {
+            background: rgba(22, 22, 48, 0.78);
+        }
+        .user-list-table-wrap .table tbody tr:hover {
+            background: rgba(0, 245, 255, 0.14);
+        }
+        .user-table th:first-child,
+        .user-table td:first-child {
+            width: 20%;
+        }
+        .user-table th:nth-child(2),
+        .user-table td:nth-child(2) {
+            width: 40%;
+        }
+        .user-table th:nth-child(3),
+        .user-table td:nth-child(3) {
+            width: 40%;
         }
         .user-table td {
-            height: 50px;
+            height: 52px;
+        }
+        .user-id-cell {
+            font-family: var(--font-mono, monospace);
+            font-size: 13px;
+            color: var(--text-muted, #888);
+        }
+        .user-name-cell {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        .user-group-cell {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--neon-cyan, #00f5ff);
+        }
+        .user-group-cell.empty {
+            color: var(--text-muted, #888);
+            font-weight: 400;
+        }
+        .user-table .user-row-empty,
+        .user-table .user-row-loading {
+            height: auto;
+            padding: 48px 16px !important;
+            text-align: center;
+            color: var(--text-muted, #888);
+            font-size: 14px;
         }
     </style>
 </head>
 <body class="cyber-page">
-<div class="cyber-table-wrap user-table">
-    <h2 class="cyber-page-title">人员列表</h2>
-    <div class="cyber-table-box table-box">
-        <table class="table">
-            <thead>
-            <tr>
-                <th>人员id</th>
-                <th>姓名</th>
-                <th>身份</th>
-            </tr>
-            </thead>
-            <tbody id="userList">
-            </tbody>
-        </table>
+<div class="user-list-page user-table">
+    <div class="user-list-header">
+        <h2 class="cyber-page-title">人员列表</h2>
+        <p class="user-list-desc">按分组筛选并查看活动参与人员</p>
+    </div>
+
+    <div class="user-list-toolbar">
+        <div class="toolbar-filter">
+            <label for="userFilterSelect">筛选范围</label>
+            <select class="form-control" id="userFilterSelect" onchange="applyUserFilter()">
+                <option value="all">全部成员</option>
+                <option value="none">无小组成员</option>
+            </select>
+        </div>
+        <div class="toolbar-stats">
+            <span>当前范围</span>
+            <span class="stats-value" id="currentFilterLabel">全部成员</span>
+            <span class="stats-divider">·</span>
+            <span>共</span>
+            <span class="stats-value" id="visibleUserCount">0</span>
+            <span>人</span>
+        </div>
+    </div>
+
+    <div class="user-list-table-wrap">
+        <div class="user-list-table-box cyber-table-box table-box">
+            <table class="table user-data-table">
+                <thead>
+                <tr>
+                    <th>人员 ID</th>
+                    <th>姓名</th>
+                    <th>小组名</th>
+                </tr>
+                </thead>
+                <tbody id="userList">
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
-
 
 <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
     var userToken = localStorage.getItem("user_token");
+    var allGroups = [];
+    var currentFilter = 'all';
+
+    function escapeHtml(text) {
+        if (text == null) {
+            return '';
+        }
+        return String(text)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    function getFilterLabel() {
+        if (currentFilter === 'all') {
+            return '全部成员';
+        }
+        if (currentFilter === 'none') {
+            return '无小组成员';
+        }
+        var matched = allGroups.find(function(group) {
+            return String(group.groupId) === currentFilter;
+        });
+        if (matched) {
+            return matched.name || ('小组' + matched.groupId);
+        }
+        return '全部成员';
+    }
+
+    function updateFilterStats(count) {
+        $('#currentFilterLabel').text(getFilterLabel());
+        $('#visibleUserCount').text(count != null ? count : 0);
+    }
+
+    function formatGroupName(groupName, groupId) {
+        if (groupName) {
+            return '<span class="user-group-cell">' + escapeHtml(groupName) + '</span>';
+        }
+        if (groupId != null && groupId !== '') {
+            var matched = allGroups.find(function(group) {
+                return String(group.groupId) === String(groupId);
+            });
+            if (matched && matched.name) {
+                return '<span class="user-group-cell">' + escapeHtml(matched.name) + '</span>';
+            }
+        }
+        return '<span class="user-group-cell empty">—</span>';
+    }
+
+    function loadGroupOptions(callback) {
+        $.ajax({
+            url: '/group/find-list',
+            type: 'GET',
+            headers: { "user_token": userToken },
+            success: function(result) {
+                if (result.code != 200) {
+                    alert('加载分组列表失败！' + (result.message || result.msg || ''));
+                    return;
+                }
+                allGroups = result.data || [];
+                buildGroupFilterOptions();
+                if (callback) {
+                    callback();
+                }
+            },
+            error: handleAuthError
+        });
+    }
+
+    function buildGroupFilterOptions() {
+        var select = $('#userFilterSelect');
+        select.find('option:not([value="all"]):not([value="none"])').remove();
+        allGroups.forEach(function(group) {
+            var label = group.name || ('小组' + group.groupId);
+            select.append(
+                $('<option></option>').val(String(group.groupId)).text(label)
+            );
+        });
+        if (select.find('option[value="' + currentFilter + '"]').length > 0) {
+            select.val(currentFilter);
+        } else {
+            currentFilter = 'all';
+            select.val('all');
+        }
+        $('#currentFilterLabel').text(getFilterLabel());
+    }
+
+    function applyUserFilter() {
+        currentFilter = String($('#userFilterSelect').val());
+        fetchUserData();
+    }
 
     function fetchUserData() {
+        var requestData = {};
+        if (currentFilter === 'none') {
+            requestData.filter = 'none';
+        } else if (currentFilter !== 'all') {
+            requestData.groupId = currentFilter;
+        }
+        updateFilterStats('…');
+        $('#userList').html('<tr><td colspan="3" class="user-row-loading">加载中...</td></tr>');
         $.ajax({
-            url: '/user/base-user/find-list',
+            url: '/member/find-list',
             type: 'GET',
+            data: requestData,
             headers: {
                 "user_token": userToken
             },
             success: function(result) {
                 if (result.code != 200) {
-                    alert("查询用户列表失败！" + result.msg);
-                } else {
-                    var users = result.data;
-                    var userList = $('#userList');
-                    userList.empty();
-                    users.forEach(function(user) {
-                        userList.append('<tr> ' +
-                        '<td>' + user.userId + '</td>' +
-                        '<td>' + user.userName + '</td>' +
-                        '<td>' + user.identity + '</td>' +
-                        '</tr>');
-                    });
+                    alert("查询用户列表失败！" + (result.message || result.msg || ''));
+                    return;
                 }
+                var users = result.data || [];
+                var userList = $('#userList');
+                userList.empty();
+                updateFilterStats(users.length);
+                if (users.length === 0) {
+                    userList.append('<tr><td colspan="3" class="user-row-empty">当前范围下暂无人员</td></tr>');
+                    return;
+                }
+                users.forEach(function(user) {
+                    userList.append(
+                        '<tr>' +
+                        '<td class="user-id-cell">#' + escapeHtml(user.userId) + '</td>' +
+                        '<td class="user-name-cell">' + escapeHtml(user.userName) + '</td>' +
+                        '<td>' + formatGroupName(user.groupName, user.groupId) + '</td>' +
+                        '</tr>'
+                    );
+                });
             },
-            error: function(err){
-                console.log(err);
-                if(err!=null && err.status==401){
-                    alert("用户未登录, 即将跳转到登录页!");
-                    window.parent.location.href = "/blogin.html";
-                }
-            }
+            error: handleAuthError
         });
     }
 
-    $(document).ready(function() {
-        fetchUserData();
-    });
+    function handleAuthError(err) {
+        console.log(err);
+        if (err != null && err.status == 401) {
+            alert("用户未登录, 即将跳转到登录页!");
+            window.parent.location.href = "/blogin.html";
+        }
+    }
 
+    $(document).ready(function() {
+        loadGroupOptions(function() {
+            fetchUserData();
+        });
+    });
 </script>
 </body>
 </html>

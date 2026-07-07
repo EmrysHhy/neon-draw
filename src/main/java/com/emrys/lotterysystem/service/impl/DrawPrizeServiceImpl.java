@@ -58,7 +58,7 @@ public class DrawPrizeServiceImpl implements DrawPrizeService {
     @Autowired
     PrizeMapper prizeMapper;
     @Autowired
-    UserMapper userMapper;
+    NormalUserMapper normalUserMapper;
     @Autowired
     WinningRecordMapper winningRecordMapper;
     @Autowired
@@ -267,7 +267,7 @@ public class DrawPrizeServiceImpl implements DrawPrizeService {
         ActivityDO activityDO = activityMapper.selectById(param.getActivityId());
         PrizeDO prizeDO = prizeMapper.selectById(param.getPrizeId());
         ActivityPrizeDO activityPrizeDO = activityPrizeMapper.selectByActivityIdAndPrizeId(param.getActivityId(), param.getPrizeId());
-        List<UserDO> userList = userMapper.selectByIds(
+        List<NormalUserDO> userList = normalUserMapper.selectByIds(
                 param.getWinnerList().stream()
                         .map(DrawPrizeParam.Winner::getUserId)
                         .distinct()
@@ -277,7 +277,7 @@ public class DrawPrizeServiceImpl implements DrawPrizeService {
         //2.构造中奖记录（每位中奖者一条）
         List<WinningRecordDO> winningRecordList = new ArrayList<>();
         for (DrawPrizeParam.Winner winner : param.getWinnerList()) {
-            UserDO user = userList.stream()
+            NormalUserDO user = userList.stream()
                     .filter(u -> u.getId().equals(winner.getUserId()))
                     .findFirst()
                     .orElseThrow(() -> new ServiceException(ServiceErrorCodeConstants.USER_NOT_FOUND));

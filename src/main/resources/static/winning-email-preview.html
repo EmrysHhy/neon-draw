@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中奖通知邮件预览</title>
+    <link rel="stylesheet" href="./css/cyber-theme.css">
+    <style>
+        body { margin: 0; padding: 20px; }
+    </style>
+</head>
+<body class="cyber-email-preview-page">
+    <div class="cyber-preview-bar">📧 中奖通知邮件预览（示例数据）</div>
+
+    <!-- 以下为 EmailUtil.buildWinningEmailContent 渲染效果 -->
+    <div style="max-width: 600px; margin: 24px auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 32px rgba(255, 107, 53, 0.15); font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;">
+        <div style="background: linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ffd700 100%); padding: 40px 24px; text-align: center;">
+            <div style="font-size: 48px; line-height: 1; margin-bottom: 12px;">🏆</div>
+            <h1 style="margin: 0; font-size: 32px; color: #ffffff; text-shadow: 0 2px 8px rgba(0,0,0,0.15); letter-spacing: 2px;">恭喜中奖！</h1>
+            <p style="margin: 12px 0 0; font-size: 16px; color: rgba(255,255,255,0.95);">好运降临，幸运属于您</p>
+        </div>
+        <div style="padding: 36px 32px;">
+            <p style="font-size: 17px; color: #333; line-height: 1.8; margin: 0 0 8px;">亲爱的 <strong style="color: #ff6b35;">张三</strong>，您好！</p>
+            <p style="font-size: 16px; color: #555; line-height: 1.8; margin: 0 0 28px;">恭喜您在 <strong>2026年度年会抽奖</strong> 中幸运中奖，以下是您的中奖详情：</p>
+            <div style="background: linear-gradient(135deg, #fff9f0 0%, #fff3e0 100%); border: 2px solid #ffd700; border-radius: 12px; padding: 28px 24px; margin-bottom: 28px;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 10px 0; font-size: 14px; color: #999; width: 80px;">奖品等级</td>
+                        <td style="padding: 10px 0; font-size: 18px; font-weight: bold; color: #e65100;">一等奖</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px 0; font-size: 14px; color: #999; border-top: 1px dashed #ffe0b2;">奖品名称</td>
+                        <td style="padding: 10px 0; font-size: 18px; font-weight: bold; color: #333; border-top: 1px dashed #ffe0b2;">iPhone 15 Pro</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px 0; font-size: 14px; color: #999; border-top: 1px dashed #ffe0b2;">中奖时间</td>
+                        <td style="padding: 10px 0; font-size: 15px; color: #666; border-top: 1px dashed #ffe0b2;">2026-12-25 18:30:00</td>
+                    </tr>
+                </table>
+            </div>
+            <div style="text-align: center; margin: 24px 0;">
+                <span style="display: inline-block; padding: 14px 36px; font-size: 16px; font-weight: bold; color: #ffffff; background: linear-gradient(135deg, #ff6b35, #f7931e); border-radius: 50px; box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);">🎊 再次恭喜您！</span>
+            </div>
+            <p style="font-size: 14px; color: #999; line-height: 1.7; margin: 0;">请妥善保存此邮件，后续领奖凭证可能需要用到。如有疑问，请联系活动主办方。</p>
+        </div>
+        <div style="background-color: #fafafa; padding: 20px 24px; text-align: center; font-size: 12px; color: #bbb; border-top: 1px solid #f0f0f0;">
+            <p style="margin: 0 0 6px;">此为系统自动发送的邮件，请勿直接回复</p>
+            <p style="margin: 0;">© 2026 抽奖系统 版权所有</p>
+        </div>
+    </div>
+</body>
+</html>

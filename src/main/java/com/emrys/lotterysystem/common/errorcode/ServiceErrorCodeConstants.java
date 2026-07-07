@@ -20,7 +20,8 @@ public interface ServiceErrorCodeConstants {
     ErrorCode LOGIN_INFO_IS_EMPTY = new ErrorCode(110, "登录信息为空");
     ErrorCode PHONE_NUMBER_OR_EMAIL_ERROR = new ErrorCode(111, "手机号或者邮箱不存在");
     ErrorCode USER_NOT_FOUND = new ErrorCode(112, "用户不存在");
-    ErrorCode VARIFICATION_CODE_ERROR = new ErrorCode(113, "验证码错误");
+    ErrorCode LOGIN_ACCOUNT_AMBIGUOUS = new ErrorCode(113, "存在多个匹配账号，无法登录");
+    ErrorCode VARIFICATION_CODE_ERROR = new ErrorCode(116, "验证码错误");
     ErrorCode REGISTER_ADMIN_TOKEN_REQUIRED = new ErrorCode(114, "注册普通用户需要管理员登录");
     ErrorCode REGISTER_TOKEN_INVALID = new ErrorCode(115, "注册 token 无效或已过期");
 
@@ -58,4 +59,5 @@ public interface ServiceErrorCodeConstants {
     ErrorCode GROUP_MEMBER_NOT_FOUND = new ErrorCode(705, "小组成员不存在");
     ErrorCode GROUP_MEMBER_IDENTITY_ERROR = new ErrorCode(706, "只能添加普通用户到小组");
     ErrorCode GROUP_MEMBER_NOT_BELONG_ADMIN = new ErrorCode(707, "用户不属于当前管理员");
+    ErrorCode GROUP_DELETE_FAILED = new ErrorCode(708, "小组删除失败");
 }

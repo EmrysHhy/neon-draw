@@ -25,9 +25,15 @@ public class LoginInterceptorConfig implements WebMvcConfigurer {
             "/*.jpg",
             "/*.png",
             "/favicon.ico",
-            "/user/**",
-            "/verification-code/send",
-            "/winning-records/show"); // 排除登录和注册请求
+            // 管理员注册与登录（无需 token）
+            "/admin/register",
+            "/admin/password/login",
+            "/admin/varification/login",
+            "/admin/varification-code/send",
+            // 成员注册（token 由业务层校验）
+            "/member/register",
+            // 抽奖页公开接口
+            "/winning-records/show");
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(loginInterceptor)

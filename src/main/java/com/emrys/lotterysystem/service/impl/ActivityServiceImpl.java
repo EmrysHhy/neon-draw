@@ -39,7 +39,7 @@ import static com.emrys.lotterysystem.service.constants.RedisConstant.ACTIVITY_D
 @Service
 public class ActivityServiceImpl implements ActivityService {
     @Autowired
-    UserMapper userMapper;
+    NormalUserMapper normalUserMapper;
     @Autowired
     PrizeMapper prizeMapper;
     @Autowired
@@ -234,7 +234,7 @@ public class ActivityServiceImpl implements ActivityService {
         }
         //校验人员id是否存在在数据库中
         List<Long> userIds = param.getActivityUserList().stream().map(ActivityUserParam::getUserId).distinct().toList();
-        Long userNumbers = userMapper.countByIds(userIds);
+        Long userNumbers = normalUserMapper.countByIds(userIds);
         if(userNumbers != userIds.size()){
             throw new ServiceException(ServiceErrorCodeConstants.ACTIVITY_USER_NOT_EXIST);
 

@@ -18,21 +18,23 @@ import org.springframework.web.servlet.ModelAndView;
 @Component
 @Slf4j
 public class LoginInterceptor implements HandlerInterceptor {
-    private static final String USER_TOKEN = "user_token";
+    private static final String USER_TOKEN_HEADER = "user_token";
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        //从请求头中获取token
-        String token = request.getHeader("USER_TOKEN");
-        if(!StringUtils.hasText(token)){
-            log.info("当前token为空");
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            return true;
+        }
+        String token = request.getHeader(USER_TOKEN_HEADER);
+        if (!StringUtils.hasText(token)) {
+            log.info("当前token为空, uri={}", request.getRequestURI());
             response.setStatus(401);
             return false;
         }
-        log.info("token:{}",token);
-        //解析token
+        log.info("token:{}", token);
         Claims claims = JWTUtil.parseToken(token);
-        if(claims == null){
-            log.info("token 已经失效");
+        if (claims == null) {
+            log.info("token 已经失效, uri={}", request.getRequestURI());
             response.setStatus(401);
             return false;
         }

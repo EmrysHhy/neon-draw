@@ -94,13 +94,12 @@
         $('.error').text('');
         // 发送AJAX请求,密码登录
         $.ajax({
-          url: '/user/password/login',
+          url: '/admin/password/login',
           type: 'POST',
           contentType: 'application/json',
           data: JSON.stringify({
             loginName: loginName,
-            password: password,
-            mandatoryIdentity : 'admin'
+            password: password
           }),
           success: function(result) {
               if(result.code != 200){
@@ -150,7 +149,7 @@
     })
     function getCode(){
         $.ajax({
-            url: '/user/varification-code/send',
+            url: '/admin/varification-code/send',
             type: 'GET',
             data:{ email:$('#loginMobile').val() },
             success: function(result) {
@@ -181,13 +180,12 @@
             $('.error').text('');
             // 发送AJAX请求
             $.ajax({
-                url: '/user/varification/login',
+                url: '/admin/varification/login',
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify({
                     loginMobile: loginMobile,
-                    verificationCode: verificationCode,
-                    mandatoryIdentity : 'ADMIN'
+                    verificationCode: verificationCode
                 }),
                 success: function(result) {
                       if(result.code != 200){

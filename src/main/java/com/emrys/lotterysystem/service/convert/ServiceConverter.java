@@ -19,9 +19,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ServiceConverter {
     /**
-     * 将 UserDO 列表转换为 UserDTO 列表
+     * 将 NormalUserDO 列表转换为 UserDTO 列表
      */
-    public static List<UserDTO> convertToUserDTOList(List<UserDO> userDOS){
+    public static List<UserDTO> convertToUserDTOList(List<NormalUserDO> userDOS){
         if(userDOS == null){
             return List.of();
         }
@@ -30,8 +30,10 @@ public class ServiceConverter {
             userDTO.setUserId(userDO.getId());
             userDTO.setUserName(userDO.getUserName());
             userDTO.setEmail(userDO.getEmail());
-            userDTO.setIdentity(UserIdentityEnum.forName(userDO.getIdentity()));
+            userDTO.setIdentity(UserIdentityEnum.NORMAL);
             userDTO.setPhoneNumber(userDO.getPhoneNumber().getValue());
+            userDTO.setGroupId(userDO.getGroupId());
+            userDTO.setGroupName(userDO.getGroupName());
             return userDTO;
         }).toList();
     }

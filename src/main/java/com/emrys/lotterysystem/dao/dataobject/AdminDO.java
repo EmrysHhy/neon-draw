@@ -4,19 +4,13 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- *
- * @author Emrys
- * content:
+ * 管理员（可登录，邮箱/手机号全局唯一）
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class UserDO extends BaseDO {
+public class AdminDO extends BaseDO {
     private String userName;
     private String email;
-    private String identity;
     private Encrypt phoneNumber;
     private String password;
-    /** 所属管理员 id；管理员自身注册时为 null */
-    private Long adminId;
-
 }

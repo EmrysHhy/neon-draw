@@ -8,24 +8,38 @@ create DATABASE `neon_draw` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 USE `neon_draw`;
 -- ----------------------------
--- Table structure for user
+-- Table structure for admin（管理员，可登录，邮箱/手机号全局唯一）
 -- ----------------------------
+drop table IF EXISTS `normal_user`;
+drop table IF EXISTS `admin`;
 drop table IF EXISTS `user`;
-create TABLE `user`  (
+create TABLE `admin`  (
+  `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT comment '管理员id',
+  `gmt_create` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP comment '创建时间',
+  `gmt_modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON update CURRENT_TIMESTAMP comment '更新时间',
+  `user_name` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL comment '姓名',
+  `email` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL comment '邮箱',
+  `phone_number` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL comment '手机号',
+  `password` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL comment '登录密码',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `uk_admin_email`(`email`(30) ASC) USING BTREE,
+  UNIQUE INDEX `uk_admin_phone`(`phone_number`(11) ASC) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Table structure for normal_user（普通用户/参与人员，不登录，无邮箱/手机号唯一约束）
+-- ----------------------------
+create TABLE `normal_user`  (
   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT comment '用户id',
-  `admin_id` bigint UNSIGNED comment '所属管理员id',
+  `admin_id` bigint UNSIGNED NOT NULL comment '所属管理员id',
   `gmt_create` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP comment '创建时间',
   `gmt_modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON update CURRENT_TIMESTAMP comment '更新时间',
   `user_name` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL comment '用户姓名',
   `email` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL comment '邮箱',
   `phone_number` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL comment '手机号',
-  `password` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL comment '登录密码',
-  `identity` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL comment '用户身份',
   PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_admin_id`(`admin_id` ASC) USING BTREE,
-  INDEX `idx_email`(`email`(30) ASC) USING BTREE,
-  INDEX `idx_phone_number`(`phone_number`(11) ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 39 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = DYNAMIC;
+  INDEX `idx_admin_id`(`admin_id` ASC) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for prize
