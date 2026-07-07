@@ -47,6 +47,9 @@ public interface ServiceErrorCodeConstants {
     ErrorCode ACTIVITY_PRIZE_AMOUNT_EXCEED_WINNER = new ErrorCode(505, "奖品数量大于中奖人员数量");
     ErrorCode WINNING_RECORD_CACHE_ERROR = new ErrorCode(506, "中奖记录缓存失败");
     ErrorCode DRAW_PRIZE_DUPLICATE = new ErrorCode(507, "该奖品正在抽奖中，请勿重复提交");
+    ErrorCode PRIZE_NOT_FOUND = new ErrorCode(508, "奖品不存在");
+    ErrorCode PRIZE_IN_USE = new ErrorCode(509, "奖品仍在活动中且未被抽取，无法删除");
+    ErrorCode PRIZE_DELETE_FAILED = new ErrorCode(510, "奖品删除失败");
 
     // 图片错误码 601-
     ErrorCode PICTURE_UPLOAD_FAILED = new ErrorCode(601, "图片上传失败");

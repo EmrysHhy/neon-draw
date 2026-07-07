@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -57,5 +58,13 @@ public class PrizeController {
         PageListDTO<PrizeDTO> pageListDTO = prizeService.findAllPrizeList(token);
         FindPrizeListResult ret = ControllerConverter.convertToFindPrizeListResult(pageListDTO);
         return CommonResult.success(ret);
+    }
+
+    @RequestMapping("/prize/delete")
+    public CommonResult<Boolean> deletePrize(@RequestHeader("user_token") String token,
+                                             @RequestParam Long prizeId) {
+        log.info("delete prize, prizeId: {}", prizeId);
+        prizeService.deletePrize(prizeId, token);
+        return CommonResult.success(true);
     }
 }

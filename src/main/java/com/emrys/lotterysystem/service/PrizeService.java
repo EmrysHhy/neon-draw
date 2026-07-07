@@ -13,4 +13,6 @@ public interface PrizeService {
     PageListDTO<PrizeDTO> findPrizeList(PageParam param, String adminToken);
 
     PageListDTO<PrizeDTO> findAllPrizeList(String adminToken);
+
+    void deletePrize(Long prizeId, String adminToken);
 }

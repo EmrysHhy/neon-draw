@@ -19,6 +19,11 @@ public interface PrizeMapper {
 
     List<PrizeDO> selectAllPrizeListByAdminId(@Param("adminId") Long adminId);
 
+    @Select("select * from prize where id = #{prizeId} and admin_id = #{adminId}")
+    PrizeDO selectByIdAndAdminId(@Param("prizeId") Long prizeId, @Param("adminId") Long adminId);
+
+    int deleteByIdAndAdminId(@Param("prizeId") Long prizeId, @Param("adminId") Long adminId);
+
     @Select("select * from prize where id = #{prizeId}")
     PrizeDO selectById(Long prizeId);
 

@@ -80,4 +80,30 @@ class PrizeControllerTest {
         assertTrue(allResult.getData().getRecords().stream()
                 .anyMatch(p -> param.getPrizeName().equals(p.getPrizeName())));
     }
+
+    @Test
+    void deletePrize() {
+        String token = loginAsAdmin();
+
+        CreatePrizeParam param = new CreatePrizeParam();
+        param.setPrizeName("待删除奖品_" + System.nanoTime());
+        param.setDescription("delete test");
+        param.setPrice(new BigDecimal("10.00"));
+        CommonResult<Long> createResult = prizeController.createPrize(token, param, null);
+        assertEquals(200, createResult.getCode());
+        Long prizeId = createResult.getData();
+        assertNotNull(prizeId);
+
+        CommonResult<Boolean> deleteResult = prizeController.deletePrize(token, prizeId);
+        assertEquals(200, deleteResult.getCode());
+        assertTrue(deleteResult.getData());
+
+        PageParam pageParam = new PageParam();
+        pageParam.setCurrentPage(1);
+        pageParam.setPageSize(100);
+        CommonResult<FindPrizeListResult> listResult = prizeController.findPrizeList(token, pageParam);
+        assertEquals(200, listResult.getCode());
+        assertTrue(listResult.getData().getRecords().stream()
+                .noneMatch(p -> prizeId.equals(p.getPrizeId())));
+    }
 }

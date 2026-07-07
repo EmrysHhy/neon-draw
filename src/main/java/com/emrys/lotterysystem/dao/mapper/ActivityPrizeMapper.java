@@ -19,6 +19,9 @@ public interface ActivityPrizeMapper {
 
     int batchInsert(@Param("list") List<ActivityPrizeDO> activityPrizeDOList);
 
+    @Select("select count(*) from activity_prize where prize_id = #{prizeId} and status = #{status}")
+    int countByPrizeIdAndStatus(@Param("prizeId") Long prizeId, @Param("status") String status);
+
     @Select("select * from activity_prize where activity_id = #{activityId}")
     List<ActivityPrizeDO> selectActivityPrizeDOListByActivityId(Long activityId);
     @Select("select * from activity_prize where activity_id = #{activityId} and prize_id = #{prizeId}")

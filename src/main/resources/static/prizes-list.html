@@ -8,14 +8,30 @@
     <style>
         .prize-table th:first-child, .prize-table td:first-child,
         .prize-table th:nth-child(3), .prize-table td:nth-child(3),
-        .prize-table th:nth-child(5), .prize-table td:nth-child(5) {
-            width: 15%;
+        .prize-table th:nth-child(5), .prize-table td:nth-child(5),
+        .prize-table th:nth-child(6), .prize-table td:nth-child(6) {
+            width: 12%;
         }
         .prize-table th:nth-child(4), .prize-table td:nth-child(4) {
-            width: 30%;
+            width: 28%;
         }
         .prize-table th:nth-child(2), .prize-table td:nth-child(2) {
-            width: 25%;
+            width: 20%;
+        }
+        .prize-delete-btn {
+            min-width: 72px;
+            padding: 6px 14px;
+            font-size: 14px;
+            color: #ff3366;
+            border: 1px solid rgba(255, 51, 102, 0.75);
+            background: rgba(255, 51, 102, 0.18);
+            border-radius: var(--border-radius, 8px);
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        .prize-delete-btn:hover {
+            color: #fff;
+            background: rgba(255, 51, 102, 0.45);
+            box-shadow: 0 0 12px rgba(255, 51, 102, 0.35);
         }
     </style>
 </head>
@@ -31,6 +47,7 @@
             <th>奖品名</th>
             <th>奖品描述</th>
             <th>奖品价值</th>
+            <th>操作</th>
         </tr>
         </thead>
         <tbody id="prizeList">
@@ -54,6 +71,61 @@
     var currentPage = 1;
     var pageSize = 10;
     var totalPages;
+    var prizeCache = [];
+
+    function escapeHtml(text) {
+        if (text == null) {
+            return '';
+        }
+        return String(text)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    function deletePrize(prizeId) {
+        var prize = prizeCache.find(function(item) {
+            return Number(item.prizeId) === Number(prizeId);
+        });
+        var prizeName = prize ? prize.prizeName : '该奖品';
+        if (!confirm('确定删除奖品「' + prizeName + '」吗？删除后不可恢复。')) {
+            return;
+        }
+        $.ajax({
+            url: '/prize/delete',
+            type: 'POST',
+            data: { prizeId: prizeId },
+            headers: {
+                "user_token": userToken
+            },
+            success: function(result) {
+                if (result.code != 200) {
+                    alert('删除奖品失败！' + (result.message || result.msg || ''));
+                    return;
+                }
+                if (currentPage > 1 && $('#prizeList tr').length <= 1) {
+                    fetchPrizes(currentPage - 1);
+                } else {
+                    fetchPrizes(currentPage);
+                }
+            },
+            error: function(err) {
+                console.log(err);
+                if (err != null && err.status == 401) {
+                    alert("用户未登录, 即将跳转到登录页!");
+                    window.location.href = "/blogin.html";
+                    window.parent.location.href = "/blogin.html";
+                    return;
+                }
+                var msg = '删除奖品失败！';
+                if (err.responseJSON && (err.responseJSON.message || err.responseJSON.msg)) {
+                    msg += err.responseJSON.message || err.responseJSON.msg;
+                }
+                alert(msg);
+            }
+        });
+    }
 
     function fetchPrizes(page) {
       if (page < 1) {
@@ -78,16 +150,21 @@
                 alert("查询奖品列表失败！" + result.msg);
             } else {
                 var prizes = result.data.records;
+                prizeCache = prizes || [];
                 var prizeList = $('#prizeList');
                 prizeList.empty();
+                if (prizes.length === 0) {
+                    prizeList.append('<tr><td colspan="6">暂无奖品数据</td></tr>');
+                }
                 prizes.forEach(function(prize) {
                     var imageUrl = prize.imageUrl ? prize.imageUrl : '/pic/defaultPrizeImg.png';
                     prizeList.append('<tr> ' +
-                            '<td>' + prize.prizeId + '</td>' +
-                            '<td><img src="' + imageUrl + '" alt="' + prize.prizeName + '" class="prize-image"></td>' +
-                            '<td>' + prize.prizeName + '</td>' +
-                            '<td>' + prize.description + '</td>' +
-                            '<td>' + prize.price + '元</td>' +
+                            '<td>' + escapeHtml(prize.prizeId) + '</td>' +
+                            '<td><img src="' + imageUrl + '" alt="' + escapeHtml(prize.prizeName) + '" class="prize-image"></td>' +
+                            '<td>' + escapeHtml(prize.prizeName) + '</td>' +
+                            '<td>' + escapeHtml(prize.description || '') + '</td>' +
+                            '<td>' + escapeHtml(prize.price) + '元</td>' +
+                            '<td><button type="button" class="btn prize-delete-btn" onclick="deletePrize(' + prize.prizeId + ')">删除</button></td>' +
                             '</tr>');
                 });
                 totalPages = Math.ceil(result.data.total / pageSize);

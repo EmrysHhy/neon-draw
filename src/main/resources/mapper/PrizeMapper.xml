@@ -53,4 +53,10 @@
             #{id}
         </foreach>
     </select>
+
+    <delete id="deleteByIdAndAdminId">
+        delete from prize
+        where id = #{prizeId}
+          and admin_id = #{adminId}
+    </delete>
 </mapper>
